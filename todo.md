@@ -1,0 +1,23 @@
+# SORNDI Version One Checklist
+
+- [x] Audit the current MVP routes, state handling, and existing data boundaries.
+- [x] Define Version One teacher journeys: classroom setup, roster, lesson plan, attendance, scorebook, daily record, report/export.
+- [x] Upgrade to persistent user and database capability if current static architecture cannot safely support real test data.
+- [x] Implement classroom and student setup with practical sample-free empty states.
+- [x] Implement attendance sessions with saved statuses, notes, date selection, and audit-friendly corrections.
+- [x] Implement lessons, teaching sessions, evidence notes, and a teacher-facing Today flow.
+- [x] Implement assessments, score entry, transparent totals, and CSV export.
+- [ ] Complete English-first and Thai UI labels across usable Version One routes.
+- [x] Rework mobile and tablet layouts for touch-first classroom use.
+- [x] Test responsive visual states, authenticated entry, Thai toggle, and production build.
+- [ ] Save checkpoint, push Version One to existing private GitHub repository, and deliver test preview.
+- [x] Store attendance correction history with timestamp and actor, then show it in the attendance workflow.
+- [x] Wire weighted score totals and calculation details into the Version One API and scorebook UI.
+- [ ] Localize usable Version One route headings, form labels, buttons, empty states, and helper copy for Thai navigation mode.
+- [x] Add an interactive teaching-session selector to attendance records and corrections.
+- [x] Join audit-history actor names and show the actor next to each attendance correction timestamp.
+- [x] Display each student’s weighted total beside their scorebook record.
+- [ ] Replace DOM-mutation localization with explicit TypeScript translation strings and re-verify Thai across routes.
+- [ ] Replace generic tree localization with explicit route/component-level Thai render strings and verify data-backed routes.
+- [ ] Implement explicit Thai render strings in Classes, Planner, Records, and Reports and verify those routes with a classroom record.
+- [x] Place each student’s weighted total directly in the corresponding scorebook row.

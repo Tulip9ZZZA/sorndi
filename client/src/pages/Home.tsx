@@ -32,6 +32,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 type Language = "EN" | "TH";
 type AttendanceStatus =
@@ -144,6 +145,13 @@ function loadLocal<T>(key: string, fallback: T): T {
 }
 
 export default function Home() {
+  // The useAuth hook provides authentication state.
+  // To implement login/logout, call logout(), or start login from an event
+  // handler: onClick={() => startLogin()} (imported from "@/const"). Never call
+  // startLogin() during render (no href={startLogin()}) — it mints a one-time
+  // nonce cookie and must run only at the moment of navigation.
+  let { user, loading, error, isAuthenticated, logout } = useAuth();
+
   const [language, setLanguage] = useState<Language>("EN");
   const [activeNav, setActiveNav] = useState("today");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
