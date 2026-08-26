@@ -10,7 +10,7 @@
 - [ ] Complete English-first and Thai UI labels across usable Version One routes.
 - [x] Rework mobile and tablet layouts for touch-first classroom use.
 - [x] Test responsive visual states, authenticated entry, Thai toggle, and production build.
-- [ ] Save checkpoint, push Version One to existing private GitHub repository, and deliver test preview.
+- [x] Save checkpoint, push Version One to existing private GitHub repository, and deliver the test preview handoff.
 - [x] Store attendance correction history with timestamp and actor, then show it in the attendance workflow.
 - [x] Wire weighted score totals and calculation details into the Version One API and scorebook UI.
 - [ ] Localize usable Version One route headings, form labels, buttons, empty states, and helper copy for Thai navigation mode.
@@ -21,3 +21,5 @@
 - [ ] Replace generic tree localization with explicit route/component-level Thai render strings and verify data-backed routes.
 - [ ] Implement explicit Thai render strings in Classes, Planner, Records, and Reports and verify those routes with a classroom record.
 - [x] Place each student’s weighted total directly in the corresponding scorebook row.
+- [x] Audit SORNDI repository evidence and refine README.md with accurate Version One setup and usage guidance.
+- [ ] Validate README markdown and push the documentation update to the existing private GitHub repository.
