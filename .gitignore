@@ -13,5 +13,16 @@ Thumbs.db
 sorndi-backup-*.json
 *backup*.json
 
+# Never commit local configuration or credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+secrets*.json
+
 # Build artifacts of experiments
 dist/
