@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" font-family="-apple-system,Segoe UI,Roboto,Noto Sans,sans-serif" role="img">
+<title>SornDi - Plan less. Teach better. The local-first teacher OS: one connected record for lessons, attendance, quizzes and scores in a single HTML file.</title>
+<rect width="1200" height="600" fill="#14120F"/>
+<line x1="0" y1="100" x2="1200" y2="100" stroke="#2E2B25" stroke-width="1"/>
+<line x1="0" y1="200" x2="1200" y2="200" stroke="#2E2B25" stroke-width="1"/>
+<line x1="0" y1="300" x2="1200" y2="300" stroke="#2E2B25" stroke-width="1"/>
+<line x1="0" y1="400" x2="1200" y2="400" stroke="#2E2B25" stroke-width="1"/>
+<line x1="0" y1="500" x2="1200" y2="500" stroke="#2E2B25" stroke-width="1"/>
+<g transform="translate(72 60) scale(0.42)"><path d="M196 74 H104 A32 32 0 0 0 104 138 H152 A32 32 0 0 1 152 202 H60" fill="none" stroke="#2E7D58" stroke-width="44"/></g>
+<text x="192" y="118" font-size="30" font-weight="600" letter-spacing="7" fill="#F4F2ED">SORNDI</text>
+<text x="194" y="146" font-size="13" fill="#8B8478" font-family="ui-monospace,Menlo,monospace">TEACHER OS · v2.0</text>
+<text x="72" y="272" font-size="54" font-weight="600" letter-spacing="-1" fill="#F4F2ED">Plan less.</text>
+<text x="72" y="334" font-size="54" font-weight="600" letter-spacing="-1" fill="#4FB084">Teach better.</text>
+<text x="72" y="384" font-size="19" fill="#B5AFA4">The local-first teacher OS: one connected record for</text>
+<text x="72" y="412" font-size="19" fill="#B5AFA4">lessons, attendance, quizzes and scores - one</text>
+<text x="72" y="440" font-size="19" fill="#B5AFA4">HTML file, no account, no server, no lock-in.</text>
+<g transform="translate(72 486)"><rect x="0" y="0" width="88" height="30" rx="4" fill="#2E7D58"/><text x="44" y="20" font-size="13" fill="#FFFFFF" text-anchor="middle" font-weight="500">Today</text><rect x="96" y="0" width="112" height="30" rx="4" fill="#1B1915" stroke="#2E2B25"/><text x="152" y="20" font-size="13" fill="#B5AFA4" text-anchor="middle">Classrooms</text><rect x="216" y="0" width="76" height="30" rx="4" fill="#1B1915" stroke="#2E2B25"/><text x="254" y="20" font-size="13" fill="#B5AFA4" text-anchor="middle">Studio</text><rect x="300" y="0" width="96" height="30" rx="4" fill="#1B1915" stroke="#2E2B25"/><text x="348" y="20" font-size="13" fill="#B5AFA4" text-anchor="middle">Exports</text></g>
+<g transform="translate(620 70)">
+<rect x="0" y="0" width="520" height="462" rx="16" fill="#201D18" stroke="#2E2B25"/>
+<path d="M0 16 a16 16 0 0 1 16-16 h488 a16 16 0 0 1 16 16 v28 h-520 z" fill="#1B1915"/>
+<rect x="20" y="12" width="12" height="14" rx="2" fill="#2E7D58"/>
+<text x="44" y="32" font-size="14" fill="#F4F2ED" font-weight="500">M.2 Science - Room 204</text>
+<text x="500" y="32" font-size="12" fill="#8B8478" text-anchor="end">Mon 08:30</text>
+<text x="24" y="76" font-size="15" font-weight="500" fill="#F4F2ED">Energy transfer in circuits</text>
+<text x="24" y="98" font-size="12.5" fill="#8B8478">Objective: explain how energy transforms</text>
+<rect x="24" y="116" width="268" height="26" rx="6" fill="none" stroke="#2E2B25"/>
+<text x="36" y="133.5" font-size="12.5" fill="#F4F2ED">1  Arisa W.</text>
+<rect x="216" y="120" width="64" height="18" rx="5" fill="#1D2B24"/>
+<text x="248" y="132.5" font-size="10" fill="#4FB084" text-anchor="middle">Present</text>
+<rect x="24" y="150" width="268" height="26" rx="6" fill="none" stroke="#2E2B25"/>
+<text x="36" y="167.5" font-size="12.5" fill="#F4F2ED">2  Chokchai N.</text>
+<rect x="216" y="154" width="64" height="18" rx="5" fill="#1D2B24"/>
+<text x="248" y="166.5" font-size="10" fill="#4FB084" text-anchor="middle">Present</text>
+<rect x="24" y="184" width="268" height="26" rx="6" fill="none" stroke="#2E2B25"/>
+<text x="36" y="201.5" font-size="12.5" fill="#F4F2ED">3  Dawid K.</text>
+<rect x="216" y="188" width="64" height="18" rx="5" fill="#2A241A"/>
+<text x="248" y="200.5" font-size="10" fill="#C09450" text-anchor="middle">Late</text>
+<rect x="24" y="218" width="268" height="26" rx="6" fill="none" stroke="#2E2B25"/>
+<text x="36" y="235.5" font-size="12.5" fill="#F4F2ED">4  Fahsai B.</text>
+<rect x="216" y="222" width="64" height="18" rx="5" fill="#1D2B24"/>
+<text x="248" y="234.5" font-size="10" fill="#4FB084" text-anchor="middle">Present</text>
+<rect x="24" y="252" width="268" height="26" rx="6" fill="none" stroke="#2E2B25"/>
+<text x="36" y="269.5" font-size="12.5" fill="#F4F2ED">5  Kanokwan S.</text>
+<rect x="216" y="256" width="64" height="18" rx="5" fill="#2A1D1B"/>
+<text x="248" y="268.5" font-size="10" fill="#C96B62" text-anchor="middle">Sick</text>
+<rect x="24" y="286" width="268" height="26" rx="6" fill="none" stroke="#2E2B25"/>
+<text x="36" y="303.5" font-size="12.5" fill="#F4F2ED">6  Napat C.</text>
+<rect x="216" y="290" width="64" height="18" rx="5" fill="#1B1915"/>
+<text x="248" y="302.5" font-size="10" fill="#8B8478" text-anchor="middle">Not set</text>
+<text x="24" y="328" font-size="11" fill="#8B8478">13 present · 1 late · 1 sick · untouched rows stay "not recorded"</text>
+<rect x="24" y="344" width="472" height="84" rx="10" fill="#1B1915" stroke="#2E2B25"/>
+<text x="40" y="368" font-size="11" fill="#B5AFA4" font-weight="500" letter-spacing="1">WEIGHTED TOTAL - THE MATH IS ON THE PAGE</text>
+<text x="40" y="392" font-family="ui-monospace,Menlo,monospace" font-size="13.5" fill="#F4F2ED">total = (70% × w2 + 90% × w1) / (w2 + w1)</text>
+<text x="40" y="414" font-family="ui-monospace,Menlo,monospace" font-size="13.5" fill="#4FB084">      = 76.7%    missing ≠ 0 · excused ≠ 0</text>
+</g>
+</svg>

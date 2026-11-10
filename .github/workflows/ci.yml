@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Domain tests
+        run: node tests/run-tests.mjs
+      - name: App file integrity
+        run: |
+          test -s index.html
+          grep -q "SORNDI app" index.html || test "$(wc -c < index.html)" -gt 100000
+          echo "index.html present ($(wc -c < index.html) bytes)"
+      - name: Repo hygiene
+        run: |
+          ! grep -rn "TODO" README.md
+          test -f LICENSE
+          test -f CONTRIBUTING.md

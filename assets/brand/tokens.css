@@ -1,0 +1,19 @@
+/* SORNDI design tokens — single source of truth for forks and external tools.
+   See docs/BRAND.md for usage rules. */
+:root {
+  --paper: #FAF9F6; --subtle: #F2F0EB; --raised: #FFFFFF;
+  --ink: #1C1915; --ink-2: #57534B; --ink-3: #7A7468;
+  --line: #E6E3DC; --line-strong: #8A8479;
+  --accent: #1F6E4E; --accent-ink: #175A3E; --accent-tint: #EAF2EE;
+  --red: #B3403A; --amber: #9A6B15; --slate: #4A6B8A; --clay: #A8552F; --teal: #2E7D74;
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Thai", "Leelawadee UI", sans-serif;
+  --font-serif: Georgia, "Times New Roman", "Noto Serif Thai", serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, "Noto Sans Mono", monospace;
+}
+[data-theme="dark"] {
+  --paper: #14120F; --subtle: #1B1915; --raised: #201D18;
+  --ink: #F4F2ED; --ink-2: #B5AFA4; --ink-3: #8B8478;
+  --line: #2E2B25; --line-strong: #55504A;
+  --accent: #2E7D58; --accent-ink: #4FB084; --accent-tint: #1D2B24;
+  --red: #C96B62; --amber: #C09450; --slate: #7C99B5; --clay: #C4794F; --teal: #5AA79D;
+}

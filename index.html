@@ -1,0 +1,3024 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="SornDi — the local-first teacher OS. Plan lessons, take attendance, run quizzes and export your classroom record. One file, no account, no server.">
+<meta name="theme-color" content="#FAF9F6">
+<title>SornDi — Teacher OS</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%2236%2044%20184%20184%22%3E%3Cpath%20d%3D%22M196%2074%20H104%20A32%2032%200%200%200%20104%20138%20H152%20A32%2032%200%200%201%20152%20202%20H60%22%20fill%3D%22none%22%20stroke%3D%22%231F6E4E%22%20stroke-width%3D%2252%22%2F%3E%3C%2Fsvg%3E">
+<style>
+/* SORNDI design system - warm paper ledger, one green accent, hairline rules. */
+
+:root {
+  --paper: #FAF9F6;
+  --subtle: #F2F0EB;
+  --raised: #FFFFFF;
+  --ink: #1C1915;
+  --ink-2: #57534B;
+  --ink-3: #7A7468;
+  --line: #E6E3DC;
+  --line-strong: #8A8479;
+  --accent: #1F6E4E;
+  --accent-ink: #175A3E;
+  --accent-tint: #EAF2EE;
+  --red: #B3403A;      --red-tint: #F7ECEB;
+  --amber: #9A6B15;    --amber-tint: #F6F0E2;
+  --slate: #4A6B8A;    --slate-tint: #EBF0F5;
+  --clay: #A8552F;     --clay-tint: #F6EDE7;
+  --teal: #2E7D74;     --teal-tint: #E8F1F0;
+  --shadow: 0 8px 28px rgba(28, 25, 21, 0.10);
+  --r-sm: 8px; --r-md: 12px; --r-lg: 16px;
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Thai", "Leelawadee UI", sans-serif;
+  --font-serif: Georgia, "Times New Roman", "Noto Serif Thai", serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, "Noto Sans Mono", monospace;
+}
+
+[data-theme="dark"] {
+  --paper: #14120F;
+  --subtle: #1B1915;
+  --raised: #201D18;
+  --ink: #F4F2ED;
+  --ink-2: #B5AFA4;
+  --ink-3: #8B8478;
+  --line: #2E2B25;
+  --line-strong: #55504A;
+  --accent: #2E7D58;
+  --accent-ink: #4FB084;
+  --accent-tint: #1D2B24;
+  --red: #C96B62;      --red-tint: #2A1D1B;
+  --amber: #C09450;    --amber-tint: #2A241A;
+  --slate: #7C99B5;    --slate-tint: #1C232B;
+  --clay: #C4794F;     --clay-tint: #2A211B;
+  --teal: #5AA79D;     --teal-tint: #1A2725;
+  --shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--accent-tint); color: var(--accent-ink); }
+a { color: var(--accent-ink); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font: inherit; color: inherit; }
+h1, h2, h3, h4 { margin: 0; font-weight: 500; letter-spacing: -0.01em; }
+p { margin: 0; }
+svg { display: block; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+/* ---------------------------------------------------------------- layout */
+.app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
+
+.sidebar {
+  background: var(--subtle);
+  border-right: 1px solid var(--line);
+  padding: 20px 12px 20px;
+  display: flex; flex-direction: column; gap: 4px;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+}
+.brand { display: flex; align-items: center; gap: 10px; padding: 4px 10px 20px; }
+.brand svg.mark { width: 26px; height: 26px; }
+.brand .name { font-weight: 600; font-size: 15px; letter-spacing: 0.02em; }
+.brand .sub { font-family: var(--font-mono); font-size: 10px; color: var(--ink-3); display: block; margin-top: 1px; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 10px; border-radius: var(--r-sm);
+  color: var(--ink-2); cursor: pointer; border: 0; background: none;
+  width: 100%; text-align: left; position: relative;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.nav-item:hover { background: rgba(28, 25, 21, 0.05); color: var(--ink); }
+[data-theme="dark"] .nav-item:hover { background: rgba(244, 242, 237, 0.06); }
+.nav-item.active { background: var(--raised); color: var(--ink); font-weight: 500; }
+.nav-item.active::before {
+  content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px;
+  background: var(--accent); border-radius: 0 2px 2px 0;
+}
+.nav-item svg { width: 16px; height: 16px; flex: none; }
+.nav-section { font-size: 11px; color: var(--ink-3); padding: 18px 10px 4px; }
+.sidebar .foot { margin-top: auto; padding: 14px 10px 0; font-size: 11px; color: var(--ink-3); }
+
+.main { min-width: 0; }
+.topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 28px; border-bottom: 1px solid var(--line);
+  position: sticky; top: 0; background: var(--paper); z-index: 30;
+}
+.topbar .crumb { font-size: 13px; color: var(--ink-3); }
+.topbar .crumb b { color: var(--ink); font-weight: 500; }
+.topbar .spacer { flex: 1; }
+.content { padding: 28px; max-width: 1200px; }
+
+/* ---------------------------------------------------------------- type */
+.page-title { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
+.page-sub { color: var(--ink-2); margin-top: 4px; max-width: 60ch; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.serif { font-family: var(--font-serif); }
+.muted { color: var(--ink-3); }
+.meta { font-size: 12px; color: var(--ink-3); }
+.small { font-size: 12.5px; }
+
+/* ---------------------------------------------------------------- buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 14px; border-radius: var(--r-sm);
+  border: 1px solid var(--line); background: var(--raised);
+  font-size: 13.5px; font-weight: 500; cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+  white-space: nowrap;
+}
+.btn:hover { border-color: var(--line-strong); }
+.btn svg { width: 15px; height: 15px; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn.danger { color: var(--red); border-color: var(--line); }
+.btn.danger:hover { border-color: var(--red); }
+.btn.ghost { background: transparent; border-color: transparent; }
+.btn.ghost:hover { background: var(--subtle); border-color: transparent; }
+.btn.sm { padding: 4px 10px; font-size: 12.5px; gap: 5px; }
+.btn.sm svg { width: 13px; height: 13px; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.iconbtn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: var(--r-sm);
+  border: 0; background: none; cursor: pointer; color: var(--ink-2);
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.iconbtn:hover { background: var(--subtle); color: var(--ink); }
+.iconbtn svg { width: 16px; height: 16px; }
+
+/* ---------------------------------------------------------------- forms */
+label.field { display: block; margin-bottom: 14px; }
+label.field > span { display: block; font-size: 12.5px; font-weight: 500; margin-bottom: 5px; color: var(--ink-2); }
+.input, select.input, textarea.input {
+  width: 100%; padding: 7px 10px;
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--raised); color: var(--ink); font: inherit;
+  transition: border-color 0.12s ease;
+}
+.input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-tint); }
+textarea.input { resize: vertical; min-height: 64px; }
+.hint { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
+.row { display: flex; gap: 12px; }
+.row > * { flex: 1; }
+.check { display: flex; gap: 8px; align-items: center; font-size: 13.5px; }
+
+/* ---------------------------------------------------------------- cards, panels */
+.card { background: var(--raised); border: 1px solid var(--line); border-radius: var(--r-md); }
+.card.pad { padding: 20px; }
+.section { margin-top: 28px; }
+.section-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+.section-head h2 { font-size: 16px; font-weight: 600; }
+.section-head .tab-glyph { width: 10px; height: 12px; flex: none; align-self: center; }
+.section-head .count { font-family: var(--font-mono); font-size: 12px; color: var(--ink-3); }
+.section-head .right { margin-left: auto; display: flex; gap: 8px; }
+
+.stat-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.stat { background: var(--raised); border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px 18px; min-width: 130px; }
+.stat .n { font-family: var(--font-mono); font-size: 22px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.stat .l { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+
+/* ---------------------------------------------------------------- chips & statuses */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 9px; border-radius: 6px; font-size: 12px; font-weight: 500;
+  background: var(--subtle); color: var(--ink-2); border: 1px solid var(--line);
+}
+.chip .dot { width: 6px; height: 6px; border-radius: 2px; background: var(--ink-3); }
+.chip.green { background: var(--accent-tint); color: var(--accent-ink); border-color: transparent; }
+.chip.green .dot { background: var(--accent-ink); }
+.chip.red { background: var(--red-tint); color: var(--red); border-color: transparent; }
+.chip.amber { background: var(--amber-tint); color: var(--amber); border-color: transparent; }
+.chip.slate { background: var(--slate-tint); color: var(--slate); border-color: transparent; }
+.chip.clay { background: var(--clay-tint); color: var(--clay); border-color: transparent; }
+.chip.teal { background: var(--teal-tint); color: var(--teal); border-color: transparent; }
+.chip.mut { background: var(--subtle); color: var(--ink-3); }
+
+/* attendance status buttons */
+.status-btns { display: flex; gap: 3px; flex-wrap: wrap; }
+.st-btn {
+  padding: 3px 8px; font-size: 11.5px; font-weight: 500;
+  border: 1px solid var(--line); border-radius: 6px;
+  background: var(--raised); color: var(--ink-3); cursor: pointer;
+  transition: all 0.1s ease; white-space: nowrap;
+}
+.st-btn:hover { border-color: var(--line-strong); color: var(--ink); }
+.st-btn.on.green { background: var(--accent-tint); color: var(--accent-ink); border-color: var(--accent-ink); }
+.st-btn.on.red { background: var(--red-tint); color: var(--red); border-color: var(--red); }
+.st-btn.on.amber { background: var(--amber-tint); color: var(--amber); border-color: var(--amber); }
+.st-btn.on.slate { background: var(--slate-tint); color: var(--slate); border-color: var(--slate); }
+.st-btn.on.clay { background: var(--clay-tint); color: var(--clay); border-color: var(--clay); }
+.st-btn.on.teal { background: var(--teal-tint); color: var(--teal); border-color: var(--teal); }
+.st-btn.on.mut { background: var(--subtle); color: var(--ink); border-color: var(--line-strong); }
+
+/* ---------------------------------------------------------------- tables */
+.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.table th {
+  text-align: left; font-size: 11.5px; font-weight: 500; color: var(--ink-3);
+  padding: 8px 10px; border-bottom: 1px solid var(--line);
+  background: var(--subtle); position: sticky; top: 0; z-index: 5;
+}
+.table td { padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.table tr:last-child td { border-bottom: 0; }
+.table tr.clickable { cursor: pointer; }
+.table tr.clickable:hover td { background: var(--subtle); }
+.table .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.table .actions { text-align: right; white-space: nowrap; }
+
+/* ---------------------------------------------------------------- tabs */
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin-bottom: 20px; overflow-x: auto; }
+.tab {
+  padding: 8px 14px; font-size: 13.5px; font-weight: 500; color: var(--ink-2);
+  background: none; border: 0; cursor: pointer; position: relative; white-space: nowrap;
+}
+.tab:hover { color: var(--ink); }
+.tab.active { color: var(--ink); }
+.tab.active::after {
+  content: ""; position: absolute; left: 10px; right: 10px; bottom: -1px; height: 2px;
+  background: var(--accent); border-radius: 2px 2px 0 0;
+}
+
+/* ---------------------------------------------------------------- dialogs */
+.overlay {
+  position: fixed; inset: 0; background: rgba(20, 18, 15, 0.45);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 8vh 16px 16px; z-index: 100; animation: fadeIn 0.15s ease;
+}
+.dialog {
+  background: var(--raised); border: 1px solid var(--line); border-radius: var(--r-lg);
+  box-shadow: var(--shadow); width: 100%; max-width: 520px; max-height: 84vh;
+  display: flex; flex-direction: column; animation: rise 0.18s ease;
+}
+.dialog.wide { max-width: 760px; }
+.dialog-head { display: flex; align-items: center; padding: 16px 20px 0; }
+.dialog-head h3 { font-size: 16px; font-weight: 600; }
+.dialog-head .iconbtn { margin-left: auto; }
+.dialog-body { padding: 16px 20px; overflow-y: auto; }
+.dialog-foot { display: flex; gap: 8px; justify-content: flex-end; padding: 4px 20px 16px; }
+
+/* ---------------------------------------------------------------- toasts */
+#toasts { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 200; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.toast {
+  background: var(--ink); color: var(--paper); padding: 8px 16px; border-radius: 8px;
+  font-size: 13px; box-shadow: var(--shadow); animation: rise 0.2s ease;
+}
+.toast.error { background: var(--red); color: #fff; }
+
+/* ---------------------------------------------------------------- misc */
+.empty { text-align: center; padding: 48px 24px; color: var(--ink-3); }
+.empty svg { width: 28px; height: 28px; margin: 0 auto 12px; color: var(--line-strong); }
+.empty .t { font-weight: 500; color: var(--ink-2); margin-bottom: 4px; }
+.empty .btn { margin-top: 16px; }
+.kbd {
+  font-family: var(--font-mono); font-size: 11px; padding: 1px 6px;
+  border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px;
+  background: var(--subtle); color: var(--ink-2);
+}
+.warn {
+  display: flex; gap: 8px; align-items: flex-start;
+  background: var(--amber-tint); color: var(--amber);
+  border: 1px solid transparent; border-radius: var(--r-sm);
+  padding: 8px 12px; font-size: 12.5px;
+}
+.warn svg { width: 14px; height: 14px; flex: none; margin-top: 1px; }
+.note {
+  font-size: 12px; color: var(--ink-3); background: var(--subtle);
+  border-left: 2px solid var(--line-strong); padding: 6px 10px; border-radius: 0 6px 6px 0;
+}
+.formula {
+  font-family: var(--font-mono); font-size: 12px; background: var(--subtle);
+  border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 12px;
+  overflow-x: auto; white-space: pre; line-height: 1.7;
+}
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.class-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.class-card { padding: 18px; cursor: pointer; transition: border-color 0.12s ease; }
+.class-card:hover { border-color: var(--line-strong); }
+.class-card .name { font-weight: 600; font-size: 15px; }
+.class-card .meta-line { margin-top: 2px; }
+.class-card .foot { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+.class-card .tab-mark { position: absolute; }
+
+.attendance-summary { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* quiz runner */
+.quiz-stage { max-width: 880px; margin: 0 auto; }
+.quiz-q { font-size: 24px; font-weight: 500; line-height: 1.35; }
+.quiz-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+.quiz-opt {
+  text-align: left; padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--r-md);
+  background: var(--raised); cursor: pointer; font-size: 15px;
+  display: flex; align-items: center; gap: 12px; transition: border-color 0.12s ease;
+}
+.quiz-opt:hover { border-color: var(--line-strong); }
+.quiz-opt .key {
+  width: 26px; height: 26px; border-radius: 6px; background: var(--subtle);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600; flex: none;
+}
+.quiz-opt .tally { margin-left: auto; font-family: var(--font-mono); font-weight: 600; font-size: 16px; }
+.quiz-opt.correct { border-color: var(--accent); background: var(--accent-tint); }
+.timer-bar { height: 6px; border-radius: 3px; background: var(--subtle); overflow: hidden; }
+.timer-bar > div { height: 100%; background: var(--accent); transition: width 0.5s linear; }
+.big-count { font-family: var(--font-mono); font-size: 56px; font-weight: 500; font-variant-numeric: tabular-nums; }
+
+/* pick / timer tools */
+.pick-name { font-size: 34px; font-weight: 600; text-align: center; padding: 28px 8px; min-height: 100px; }
+
+/* print */
+@media print {
+  .sidebar, .topbar, #toasts, .no-print { display: none !important; }
+  .app { grid-template-columns: 1fr; }
+  .content { padding: 0; max-width: none; }
+  body { background: #fff; color: #000; font-size: 12px; }
+  .card { border-color: #ccc; box-shadow: none; }
+  .print-only { display: block !important; }
+}
+.print-only { display: none; }
+
+/* entrance motion - one short rise, staggered on cards */
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.view { animation: rise 0.18s ease; }
+
+/* responsive */
+@media (max-width: 920px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed; bottom: 0; left: 0; right: 0; top: auto; height: auto;
+    flex-direction: row; padding: 6px 8px; border-right: 0; border-top: 1px solid var(--line);
+    overflow-x: auto; z-index: 50; gap: 2px;
+  }
+  .brand, .nav-section, .sidebar .foot { display: none; }
+  .nav-item { flex-direction: column; gap: 3px; font-size: 10.5px; padding: 6px 10px; }
+  .nav-item.active::before { left: 8px; right: 8px; top: 0; bottom: auto; width: auto; height: 3px; border-radius: 0 0 2px 2px; }
+  .main { padding-bottom: 64px; }
+  .content { padding: 20px 16px; }
+  .topbar { padding: 10px 16px; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .quiz-opts { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar" aria-label="Navigation"></aside>
+  <div class="main">
+    <div class="topbar">
+      <span class="crumb" id="crumb"></span>
+      <span class="spacer"></span>
+      <button class="iconbtn" id="langbtn" aria-label="Switch language"></button>
+      <button class="iconbtn" id="themebtn" aria-label="Toggle theme"></button>
+    </div>
+    <div class="content" id="view"></div>
+  </div>
+</div>
+<div id="toasts" aria-live="polite"></div>
+<script>
+/* SORNDI core domain logic — pure functions, no DOM, no storage.
+   Inlined into index.html at build time; imported by tests/run-tests.mjs. */
+
+const ATTENDANCE_STATUSES = [
+  { id: "present", key: "st.present", tone: "green" },
+  { id: "late", key: "st.late", tone: "amber" },
+  { id: "absent_excused", key: "st.absentExcused", tone: "slate" },
+  { id: "absent_unexcused", key: "st.absentUnexcused", tone: "red" },
+  { id: "sick", key: "st.sick", tone: "clay" },
+  { id: "left_early", key: "st.leftEarly", tone: "mut" },
+  { id: "remote", key: "st.remote", tone: "teal" },
+  { id: "other", key: "st.other", tone: "mut" },
+];
+
+const LESSON_TEMPLATES = [
+  {
+    id: "retrieval",
+    key: "tpl.retrieval",
+    stages: [
+      { name: "Retrieval starter", minutes: 8, note: "Recall of prior objectives, no notes" },
+      { name: "Review and correct", minutes: 5, note: "Feedback on the starter" },
+      { name: "New content", minutes: 12, note: "Input with worked examples" },
+      { name: "Guided practice", minutes: 12, note: "Teacher circulates, checks" },
+      { name: "Independent practice", minutes: 10, note: "Solo work" },
+      { name: "Exit check", minutes: 3, note: "One question, all answer" },
+    ],
+  },
+  {
+    id: "worked_example",
+    key: "tpl.workedExample",
+    stages: [
+      { name: "Worked example", minutes: 10, note: "Model the thinking aloud" },
+      { name: "Guided practice", minutes: 15, note: "Completion problems" },
+      { name: "Independent practice", minutes: 15, note: "Fading support" },
+      { name: "Exit check", minutes: 5, note: "Evidence of the objective" },
+    ],
+  },
+  {
+    id: "discussion",
+    key: "tpl.discussion",
+    stages: [
+      { name: "Prediction", minutes: 5, note: "Commit before reveal" },
+      { name: "Pair discussion", minutes: 10, note: "Argue from evidence" },
+      { name: "Compare and error analysis", minutes: 15, note: "Contrast solutions" },
+      { name: "Consolidation", minutes: 10, note: "Summarise the rule" },
+    ],
+  },
+  {
+    id: "task",
+    key: "tpl.task",
+    stages: [
+      { name: "Task brief", minutes: 10, note: "Goal, roles, success criteria" },
+      { name: "Team work", minutes: 25, note: "Teacher checks in per team" },
+      { name: "Share and feedback", minutes: 10, note: "Two stars and a step" },
+      { name: "Reflection", minutes: 5, note: "What changed in your thinking" },
+    ],
+  },
+  {
+    id: "spaced_review",
+    key: "tpl.spacedReview",
+    stages: [
+      { name: "Cumulative quiz", minutes: 10, note: "Mix of older objectives" },
+      { name: "Reteach weak spots", minutes: 15, note: "From quiz results" },
+      { name: "Practice", minutes: 15, note: "Apply again" },
+      { name: "Next steps", minutes: 5, note: "Schedule the next review" },
+    ],
+  },
+];
+
+function uid() {
+  return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+}
+
+/* ------------------------------------------------------------- gradebook
+   Score values: number (0..max), "missing", "excused", or null (not entered).
+   Missing and excused are never counted as zero: they are excluded from both
+   the sum and the weight denominator, and reported separately. */
+
+function scoreIsNumber(v) {
+  return typeof v === "number" && isFinite(v);
+}
+
+function assessmentStats(scores, maxScore) {
+  let recorded = 0, missing = 0, excused = 0, unentered = 0, sum = 0;
+  for (const v of scores) {
+    if (v === null || v === undefined) { unentered++; continue; }
+    if (v === "missing") { missing++; continue; }
+    if (v === "excused") { excused++; continue; }
+    if (scoreIsNumber(v)) { recorded++; sum += v; }
+  }
+  const average = recorded > 0 ? sum / recorded / maxScore * 100 : null;
+  return { recorded, missing, excused, unentered, sum, average };
+}
+
+/* Weighted total per student.
+   assessments: [{id, maxScore, weight}]
+   getScore(assessmentId, studentId) -> value
+   Returns { total, included: [{assessmentId, pct, weight, contribution}], missing, excused, weightSum }
+   total is null when no numeric scores exist. */
+function weightedTotal(assessments, studentId, getScore) {
+  const included = [];
+  let weightSum = 0, weightedSum = 0, missing = 0, excused = 0;
+  for (const a of assessments) {
+    const v = getScore(a.id, studentId);
+    if (v === "missing") { missing++; continue; }
+    if (v === "excused") { excused++; continue; }
+    if (!scoreIsNumber(v)) continue;
+    if (v < 0 || v > a.maxScore) continue; // out-of-range scores are ignored, never invented
+    const pct = v / a.maxScore * 100;
+    included.push({ assessmentId: a.id, pct, weight: a.weight, contribution: pct * a.weight });
+    weightSum += a.weight;
+    weightedSum += pct * a.weight;
+  }
+  const total = weightSum > 0 ? weightedSum / weightSum : null;
+  return { total, included, missing, excused, weightSum };
+}
+
+function weightSumOf(assessments) {
+  return assessments.reduce((s, a) => s + (Number(a.weight) || 0), 0);
+}
+
+/* ------------------------------------------------------------- attendance */
+
+function attendanceSummary(records) {
+  // records: [{status}] with status null/undefined meaning not recorded
+  const counts = { not_recorded: 0 };
+  for (const s of ATTENDANCE_STATUSES) counts[s.id] = 0;
+  for (const r of records) {
+    const k = r && r.status && counts[r.status] !== undefined ? r.status : "not_recorded";
+    counts[k]++;
+  }
+  return counts;
+}
+
+function attendanceRate(records) {
+  // Share of explicitly recorded, in-room-or-remote attendance over all recorded rows.
+  const counted = records.filter(r => r && r.status);
+  if (counted.length === 0) return null;
+  const ok = counted.filter(r => r.status === "present" || r.status === "remote").length;
+  return Math.round(ok / counted.length * 1000) / 10;
+}
+
+/* ------------------------------------------------------------- lesson plan */
+
+function templateStages(templateId) {
+  const t = LESSON_TEMPLATES.find(t => t.id === templateId);
+  return t ? t.stages.map(s => ({ ...s })) : null;
+}
+
+function planTotalMinutes(stages) {
+  return (stages || []).reduce((s, st) => s + (Number(st.minutes) || 0), 0);
+}
+
+function planWarnings(stages, slotMinutes, hasObjective) {
+  const warns = [];
+  if (!hasObjective) warns.push("no_objective");
+  const total = planTotalMinutes(stages);
+  if (slotMinutes && total > slotMinutes) warns.push("over_time");
+  if (total === 0) warns.push("no_stages");
+  return warns;
+}
+
+/* ------------------------------------------------------------- CSV / data */
+
+function csvEscape(v) {
+  const s = String(v ?? "");
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+
+function toCSV(headers, rows) {
+  return [headers.map(csvEscape).join(",")]
+    .concat(rows.map(r => r.map(csvEscape).join(",")))
+    .join("\r\n");
+}
+
+function todayISO(d = new Date()) {
+  const p = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
+function weekdayIndex(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d).getDay(); // 0 = Sunday
+}
+
+window.SorndiCore = { ATTENDANCE_STATUSES, LESSON_TEMPLATES, uid, scoreIsNumber, assessmentStats, weightedTotal, weightSumOf, attendanceSummary, attendanceRate, templateStages, planTotalMinutes, planWarnings, csvEscape, toCSV, todayISO, weekdayIndex };
+
+</script>
+<script>
+/* ================================================================ SORNDI app core
+   State, persistence, i18n, icons, router, shared UI helpers. Vanilla JS, no deps. */
+
+"use strict";
+
+/* ---------------------------------------------------------------- icons */
+const I = {
+  today: '<rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9.5h16M8 3v4M16 3v4M9 15l2 2 4-4"/>',
+  classes: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v18M12.5 8h3.5M12.5 12h3.5"/>',
+  studio: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/>',
+  quiz: '<path d="M3.5 6h9M3.5 12h9M3.5 18h6M14 16.5l2 2 4-4.5"/>',
+  scorebook: '<rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/>',
+  records: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 2.5h6v3H9zM9 11h6M9 15h4"/>',
+  tools: '<rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1.1" fill="currentColor" stroke="none"/><circle cx="9" cy="15" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="15" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/>',
+  exports: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+  settings: '<path d="M4 6h16M4 12h16M4 18h16M9 3.5v5M15 9.5v5M7 15.5v5"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M3.5 19.5c.8-3.2 2.9-4.8 5.5-4.8s4.7 1.6 5.5 4.8M16.5 5.6a3 3 0 010 5.3M18 14.9c1.7.6 2.9 2 3.4 4.1"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M5 20c1-3.5 3.7-5.2 7-5.2s6 1.7 7 5.2"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  check: '<path d="M5 13l4 4L19 7"/>',
+  chevD: '<path d="M6 9l6 6 6-6"/>',
+  chevR: '<path d="M9 6l6 6-6 6"/>',
+  trash: '<path d="M4 7h16M9.5 7V4.5h5V7M6.5 7l1 13.5h9l1-13.5M10 11v6M14 11v6"/>',
+  edit: '<path d="M4 20l4.5-1L20 7.5 16.5 4 5 15.5 4 20z"/>',
+  warning: '<path d="M10.3 4.4L2.7 17.4a2 2 0 001.7 3.1h15.2a2 2 0 001.7-3.1L13.7 4.4a2 2 0 00-3.4 0zM12 9.5v4.5M12 17v.5"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 8v.5M12 11.5V16"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+  history: '<path d="M3.5 12a8.5 8.5 0 108.5-8.5A8.5 8.5 0 004 8M3.5 3.5V8H8M12 7.5V12l3 2"/>',
+  dots: '<circle cx="5" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.4" fill="currentColor" stroke="none"/>',
+  arrowR: '<path d="M4 12h15M13 6l6 6-6 6"/>',
+  moon: '<path d="M20 14.5A8.5 8.5 0 119.5 4a7 7 0 0010.5 10.5z"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14.5 14.5 0 010 18M12 3a14.5 14.5 0 000 18"/>',
+  upload: '<path d="M12 15V4M7 9l5-5 5 5M5 20h14"/>',
+  printer: '<path d="M7 8V3h10v5M7 17H4V8h16v9h-3M7 13h10v8H7z"/>',
+  copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 012-2h8"/>',
+  play: '<path d="M8 5.5l10 6.5-10 6.5v-13z"/>',
+  pause: '<path d="M9 5.5v13M15 5.5v13"/>',
+  refresh: '<path d="M20 12a8 8 0 11-2.34-5.66M20 3.5V8h-4.5"/>',
+  file: '<path d="M6 3h8l4 4v14H6zM14 3v4h4M9.5 13h5M9.5 17h5"/>',
+  chart: '<path d="M4 20V4M4 20h16M8.5 16v-5M13 16V8M17.5 16v-3"/>',
+  timer: '<circle cx="12" cy="13" r="8"/><path d="M12 13V9.5M9.5 2h5"/>',
+  book: '<path d="M4 5a2 2 0 012-2h13v17H6a2 2 0 00-2 2V5zM9 3v17"/>',
+};
+
+function icon(name, cls) {
+  return `<svg class="${cls || ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[name] || ""}</svg>`;
+}
+
+const MARK_PATH = 'M196 74 H104 A32 32 0 0 0 104 138 H152 A32 32 0 0 1 152 202 H60';
+function markSVG(cls, color) {
+  return `<svg class="${cls || ""}" viewBox="36 44 184 184" fill="none" aria-hidden="true"><path d="${MARK_PATH}" stroke="${color || "currentColor"}" stroke-width="44"/></svg>`;
+}
+const TAB_GLYPH = '<svg class="tab-glyph" viewBox="0 0 10 12" aria-hidden="true"><path d="M1 1h8v5H1z M1 6h5v5H1z" fill="currentColor" opacity="0.85"/></svg>';
+
+/* ---------------------------------------------------------------- i18n */
+const I18N = {
+  en: {
+    "app.tagline": "Teacher OS",
+    "nav.today": "Today", "nav.classes": "Classrooms", "nav.studio": "Studio",
+    "nav.tools": "Tools", "nav.exports": "Exports", "nav.settings": "Settings",
+    "nav.overview": "Overview", "nav.roster": "Roster", "nav.attendance": "Attendance",
+    "nav.lessons": "Lessons", "nav.scorebook": "Scorebook", "nav.records": "Daily records",
+    "st.present": "Present", "st.late": "Late", "st.absentExcused": "Absent - excused",
+    "st.absentUnexcused": "Absent", "st.sick": "Sick", "st.leftEarly": "Left early",
+    "st.remote": "Remote", "st.other": "Other", "st.notRecorded": "Not recorded",
+    "act.save": "Save", "act.cancel": "Cancel", "act.delete": "Delete", "act.edit": "Edit",
+    "act.close": "Close", "act.add": "Add", "act.create": "Create", "act.open": "Open",
+    "act.back": "Back", "act.done": "Done", "act.remove": "Remove",
+    "today.title": "Today",
+    "today.sessions": "Sessions today", "today.needs": "Needs attention",
+    "today.upcoming": "Coming up", "today.start": "Start your day",
+    "today.noSessions": "No sessions scheduled today",
+    "today.createFirst": "Create a class, add your roster, and plan a lesson - it all starts there.",
+    "today.takeAttendance": "Take attendance", "today.openLesson": "Open lesson",
+    "today.missingReflection": "Reflection missing", "today.attendanceNotRecorded": "Attendance not recorded",
+    "today.prepare": "Prepare",
+    "classes.title": "Classrooms", "classes.new": "New class", "classes.empty": "No classes yet",
+    "class.students": "students", "class.subject": "Subject", "class.grade": "Grade level",
+    "class.room": "Room", "class.term": "Term", "class.name": "Class name",
+    "class.timetable": "Timetable", "class.archive": "Archive", "class.unarchive": "Restore",
+    "class.attRate": "Attendance recorded", "class.recentSessions": "Recent sessions",
+    "class.addStudent": "Add student", "class.importRoster": "Paste roster",
+    "roster.number": "No.", "roster.name": "Student name", "roster.notes": "Notes",
+    "roster.importHint": "One student per line. Use number,name for a numbered roster - the number is optional.",
+    "att.newSession": "New session", "att.markAll": "Mark all present", "att.history": "History",
+    "att.notCounted": "Rows left untouched stay Not recorded - they are never counted as absent.",
+    "att.correction": "Correction", "att.by": "by", "att.session": "Session", "att.date": "Date",
+    "att.pickSession": "Choose a session to record attendance",
+    "lesson.new": "New lesson", "lesson.objective": "Learning objective",
+    "lesson.template": "Structure template", "lesson.stages": "Lesson stages",
+    "lesson.totalTime": "Total time", "lesson.status": "Status", "lesson.planned": "Planned date",
+    "lesson.openStudio": "Open in Studio", "lesson.generate": "Generate stages",
+    "warn.noObjective": "This lesson has no learning objective yet",
+    "warn.overTime": "The stages run longer than the timetable slot",
+    "lesson.draft": "Draft", "lesson.ready": "Ready", "lesson.taught": "Taught", "lesson.cancelled": "Cancelled",
+    "score.new": "New assessment", "score.name": "Assessment", "score.category": "Category",
+    "score.max": "Max score", "score.weight": "Weight", "score.missing": "Missing",
+    "score.excused": "Excused", "score.total": "Weighted total", "score.showMath": "Show the calculation",
+    "score.formulaTitle": "How this total is calculated",
+    "score.noScore": "No scored work yet",
+    "quiz.new": "New quiz", "quiz.question": "Question", "quiz.prompt": "Question prompt",
+    "quiz.option": "Option", "quiz.correct": "Correct", "quiz.explain": "Explanation",
+    "quiz.run": "Run quiz", "quiz.preview": "Preview", "quiz.projector": "Projector / tally",
+    "quiz.shared": "Shared device", "quiz.reveal": "Reveal answer", "quiz.next": "Next",
+    "quiz.finish": "Finish", "quiz.results": "Results", "quiz.saveRun": "Save results",
+    "quiz.modeNote": "Runs on this device only. No student accounts, no internet needed.",
+    "quiz.tapTally": "Tap a letter for each answer you see or hear",
+    "records.new": "New record template", "records.fields": "Fields",
+    "records.entry": "Enter records", "records.na": "N/A",
+    "records.absenceRule": "An absent student is prefilled Not applicable - you can change it.",
+    "tools.pick": "Random student", "tools.teams": "Team maker", "tools.timer": "Class timer",
+    "tools.pickDesc": "Pick a student. Everyone comes up once before anyone repeats.",
+    "tools.teamsDesc": "Split the roster into balanced, random teams.",
+    "tools.timerDesc": "A big countdown for the whole room.",
+    "tools.pick": "Random student", "tools.teams": "Team maker", "tools.timer": "Class timer",
+    "tools.reset": "Reset", "tools.pickOne": "Pick", "tools.teamCount": "Number of teams",
+    "tools.minutes": "Minutes", "tools.start": "Start", "tools.pause": "Pause",
+    "tools.resume": "Resume", "tools.remaining": "remaining", "tools.picked": "Picked",
+    "exports.title": "Exports", "exports.attendance": "Attendance CSV",
+    "exports.scorebook": "Scorebook CSV", "exports.log": "Daily log (Markdown)",
+    "exports.report": "Class report (print)", "exports.quiz": "Quiz results CSV",
+    "exports.backup": "Full backup (JSON)", "exports.restore": "Restore backup",
+    "exports.wipe": "Erase all data", "exports.hint": "Every export is generated in your browser from your own data.",
+    "exports.quizzesNone": "No saved quiz runs yet",
+    "set.teacher": "Teacher name", "set.school": "School (optional)", "set.lang": "Language",
+    "set.theme": "Theme", "set.light": "Light", "set.dark": "Dark", "set.system": "System",
+    "set.demo": "Load demo class", "set.demoNote": "Replaces current data with a realistic sample class.",
+    "set.data": "Data and privacy", "set.dataNote": "SornDi keeps everything in this browser. Nothing is sent to any server. A backup is a single JSON file you own.",
+    "set.shortcuts": "Keyboard", "set.about": "About",
+    "shell.foot1": "Local-first · No account", "shell.foot2": "Data stays in this browser",
+    "demo.loaded": "Demo class loaded",
+    "saved": "Saved", "exported": "Downloaded", "restored": "Backup restored",
+    "confirm.wipe": "This deletes every class, student and record in this browser. Type ERASE to confirm.",
+    "empty.noLessons": "No lessons yet", "empty.noQuizzes": "No quizzes yet",
+    "empty.noAssessments": "No assessments yet", "empty.noRecords": "No record templates yet",
+    "empty.noSessions": "No sessions yet - open a lesson or create a session below",
+  },
+  th: {
+    "app.tagline": "ระบบประจำวันครู",
+    "nav.today": "วันนี้", "nav.classes": "ห้องเรียน", "nav.studio": "สตูดิโอ",
+    "nav.tools": "เครื่องมือ", "nav.exports": "ส่งออก", "nav.settings": "การตั้งค่า",
+    "nav.overview": "ภาพรวม", "nav.roster": "รายชื่อนักเรียน", "nav.attendance": "การเข้าเรียน",
+    "nav.lessons": "แผนการสอน", "nav.scorebook": "สมุดคะแนน", "nav.records": "บันทึกประจำวัน",
+    "st.present": "มาเรียน", "st.late": "มาสาย", "st.absentExcused": "ลากิจ",
+    "st.absentUnexcused": "ขาดเรียน", "st.sick": "ป่วย", "st.leftEarly": "กลับก่อนเวลา",
+    "st.remote": "เรียนทางไกล", "st.other": "อื่น ๆ", "st.notRecorded": "ยังไม่บันทึก",
+    "act.save": "บันทึก", "act.cancel": "ยกเลิก", "act.delete": "ลบ", "act.edit": "แก้ไข",
+    "act.close": "ปิด", "act.add": "เพิ่ม", "act.create": "สร้าง", "act.open": "เปิด",
+    "act.back": "กลับ", "act.done": "เสร็จ", "act.remove": "เอาออก",
+    "today.title": "วันนี้",
+    "today.sessions": "คาบเรียนวันนี้", "today.needs": "รอดำเนินการ",
+    "today.upcoming": "กำลังจะมาถึง", "today.start": "เริ่มต้นวันสอน",
+    "today.noSessions": "วันนี้ไม่มีคาบเรียนที่บันทึกไว้",
+    "today.createFirst": "สร้างห้องเรียน ใส่รายชื่อนักเรียน และวางแผนการสอน - ทุกอย่างเริ่มที่นี่",
+    "today.takeAttendance": "เช็คการเข้าเรียน", "today.openLesson": "เปิดแผนการสอน",
+    "today.missingReflection": "ยังไม่ได้สะท้อนคิด", "today.attendanceNotRecorded": "ยังไม่ได้เช็คการเข้าเรียน",
+    "today.prepare": "เตรียม",
+    "classes.title": "ห้องเรียน", "classes.new": "สร้างห้องเรียน", "classes.empty": "ยังไม่มีห้องเรียน",
+    "class.students": "นักเรียน", "class.subject": "วิชา", "class.grade": "ระดับชั้น",
+    "class.room": "ห้อง", "class.term": "ภาคเรียน", "class.name": "ชื่อห้องเรียน",
+    "class.timetable": "ตารางเรียน", "class.archive": "จัดเก็บ", "class.unarchive": "กู้คืน",
+    "class.attRate": "บันทึกการเข้าเรียน", "class.recentSessions": "คาบเรียนล่าสุด",
+    "class.addStudent": "เพิ่มนักเรียน", "class.importRoster": "วางรายชื่อ",
+    "roster.number": "เลขที่", "roster.name": "ชื่อ-นามสกุล", "roster.notes": "หมายเหตุ",
+    "roster.importHint": "นักเรียนหนึ่งคนต่อบรรทัด ใส่เลขที่นำหน้าชื่อได้ เช่น 1, ดาวิด",
+    "att.newSession": "เปิดคาบเรียน", "att.markAll": "ทำเป็นมาเรียนทั้งหมด", "att.history": "ประวัติ",
+    "att.notCounted": "แถวที่ไม่ได้บันทึกจะคงสถานะ ยังไม่บันทึก - ไม่ถูกนับเป็นขาดเรียน",
+    "att.correction": "แก้ไข", "att.by": "โดย", "att.session": "คาบเรียน", "att.date": "วันที่",
+    "att.pickSession": "เลือกคาบเรียนเพื่อบันทึกการเข้าเรียน",
+    "lesson.new": "แผนการสอนใหม่", "lesson.objective": "จุดประสงค์การเรียนรู้",
+    "lesson.template": "โครงสร้างกิจกรรม", "lesson.stages": "ขั้นตอนการสอน",
+    "lesson.totalTime": "เวลารวม", "lesson.status": "สถานะ", "lesson.planned": "วันที่จะสอน",
+    "lesson.openStudio": "เปิดในสตูดิโอ", "lesson.generate": "สร้างขั้นตอนอัตโนมัติ",
+    "warn.noObjective": "แผนนี้ยังไม่มีจุดประสงค์การเรียนรู้",
+    "warn.overTime": "ขั้นตอนรวมเกินเวลาในตารางเรียน",
+    "lesson.draft": "ร่าง", "lesson.ready": "พร้อมสอน", "lesson.taught": "สอนแล้ว", "lesson.cancelled": "ยกเลิก",
+    "score.new": "เพิ่มชิ้นงาน", "score.name": "ชิ้นงาน", "score.category": "หมวด",
+    "score.max": "คะแนนเต็ม", "score.weight": "น้ำหนัก", "score.missing": "ไม่ส่ง",
+    "score.excused": "ยกเว้น", "score.total": "คะแนนรวมถ่วงน้ำหนัก", "score.showMath": "ดูวิธีคิด",
+    "score.formulaTitle": "วิธีคำนวณคะแนนรวม",
+    "score.noScore": "ยังไม่มีชิ้นงาน",
+    "quiz.new": "สร้างควิซ", "quiz.question": "คำถาม", "quiz.prompt": "โจทย์คำถาม",
+    "quiz.option": "ตัวเลือก", "quiz.correct": "คำตอบที่ถูก", "quiz.explain": "เฉลยและคำอธิบาย",
+    "quiz.run": "เริ่มควิซ", "quiz.preview": "ดูตัวอย่าง", "quiz.projector": "โปรเจกเตอร์ / นับเงยือก",
+    "quiz.shared": "เครื่องเดียวส่งกันดู", "quiz.reveal": "เฉลย", "quiz.next": "ถัดไป",
+    "quiz.finish": "จบควิซ", "quiz.results": "ผลลัพธ์", "quiz.saveRun": "บันทึกผล",
+    "quiz.modeNote": "ทำงานบนเครื่องนี้เท่านั้น ไม่ต้องมีบัญชีนักเรียน ไม่ต้องใช้อินเทอร์เน็ต",
+    "quiz.tapTally": "แตะตัวอักษรเพื่อนับคำตอบที่เห็นหรือได้ยิน",
+    "records.new": "เทมเพลตบันทึกใหม่", "records.fields": "ฟิลด์",
+    "records.entry": "กรอกบันทึก", "records.na": "ไม่เกี่ยวข้อง",
+    "records.absenceRule": "นักเรียนที่ขาดจะถูกกรอก ไม่เกี่ยวข้อง ให้อัตโนมัติ - แก้ไขได้",
+    "tools.pick": "สุ่มนักเรียน", "tools.teams": "แบ่งกลุ่ม", "tools.timer": "จับเวลา",
+    "tools.pickDesc": "สุ่มนักเรียนหนึ่งคน ทุกคนได้ถูกเรียกก่อนเริ่มวนรอบใหม่",
+    "tools.teamsDesc": "แบ่งรายชื่อเป็นกลุ่มแบบสุ่มให้สมดุล",
+    "tools.timerDesc": "จับเวลาแบบตัวใหญ่เห็นทั้งห้อง",
+    "tools.reset": "รีเซ็ต", "tools.pickOne": "สุ่ม", "tools.teamCount": "จำนวนกลุ่ม",
+    "tools.minutes": "นาที", "tools.start": "เริ่ม", "tools.pause": "หยุด",
+    "tools.resume": "ทำต่อ", "tools.remaining": "ที่เหลือ", "tools.picked": "ถูกเรียกแล้ว",
+    "exports.title": "ส่งออก", "exports.attendance": "การเข้าเรียน CSV",
+    "exports.scorebook": "สมุดคะแนน CSV", "exports.log": "บันทึกประจำวัน (Markdown)",
+    "exports.report": "รายงานห้องเรียน (พิมพ์)", "exports.quiz": "ผลควิซ CSV",
+    "exports.backup": "สำรองทั้งหมด (JSON)", "exports.restore": "กู้คืนข้อมูล",
+    "exports.wipe": "ลบข้อมูลทั้งหมด", "exports.hint": "ทุกไฟล์ส่งออกสร้างจากข้อมูลของคุณในเบราว์เซอร์นี้",
+    "exports.quizzesNone": "ยังไม่มีผลควิซที่บันทึกไว้",
+    "set.teacher": "ชื่อครู", "set.school": "โรงเรียน (ไม่บังคับ)", "set.lang": "ภาษา",
+    "set.theme": "ธีม", "set.light": "สว่าง", "set.dark": "มืด", "set.system": "ตามระบบ",
+    "set.demo": "โหลดห้องเรียนตัวอย่าง", "set.demoNote": "แทนที่ข้อมูลปัจจุบันด้วยห้องเรียนตัวอย่าง",
+    "set.data": "ข้อมูลและความเป็นส่วนตัว", "set.dataNote": "SornDi เก็บทุกอย่างไว้ในเบราว์เซอร์นี้ ไม่ส่งข้อมูลไปเซิร์ฟเวอร์ใด ไฟล์สำรองเป็น JSON ไฟล์เดียวที่คุณเป็นเจ้าของ",
+    "set.shortcuts": "คีย์ลัด", "set.about": "เกี่ยวกับ",
+    "shell.foot1": "ใช้งานส่วนตัว · ไม่ต้องมีบัญชี", "shell.foot2": "ข้อมูลอยู่ในเบราว์เซอร์นี้",
+    "demo.loaded": "โหลดห้องเรียนตัวอย่างแล้ว",
+    "saved": "บันทึกแล้ว", "exported": "ดาวน์โหลดแล้ว", "restored": "กู้คืนข้อมูลแล้ว",
+    "confirm.wipe": "การกระทำนี้จะลบทุกห้องเรียน นักเรียน และบันทึกในเบราว์เซอร์นี้ พิมพ์ ERASE เพื่อยืนยัน",
+    "empty.noLessons": "ยังไม่มีแผนการสอน", "empty.noQuizzes": "ยังไม่มีควิซ",
+    "empty.noAssessments": "ยังไม่มีชิ้นงาน", "empty.noRecords": "ยังไม่มีเทมเพลตบันทึก",
+    "empty.noSessions": "ยังไม่มีคาบเรียน - เปิดแผนการสอนหรือเพิ่มคาบเรียนด้านล่าง",
+  },
+};
+
+let LANG = "en";
+function t(key) {
+  return (I18N[LANG] && I18N[LANG][key]) || I18N.en[key] || key;
+}
+function setLang(l) {
+  LANG = l === "th" ? "th" : "en";
+  document.documentElement.lang = LANG === "th" ? "th" : "en";
+}
+
+const WEEKDAYS = {
+  en: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+  th: ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"],
+};
+const WEEKDAYS_SHORT = {
+  en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  th: ["อา.", "จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส."],
+};
+const MONTHS = {
+  en: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+  th: ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"],
+};
+
+function fmtDateISO(iso, opts) {
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-").map(Number);
+  const wd = WEEKDAYS[LANG][new Date(y, m - 1, d).getDay()];
+  if (opts && opts.long) {
+    const year = LANG === "th" ? y + 543 : y;
+    return LANG === "th"
+      ? `${wd} ${d} ${MONTHS.th[m - 1]} ${year}`
+      : `${wd} ${d} ${MONTHS.en[m - 1]} ${y}`;
+  }
+  const year = LANG === "th" ? y + 543 : y;
+  return LANG === "th" ? `${d}/${m}/${year}` : `${d} ${MONTHS.en[m - 1].slice(0, 3)} ${y}`;
+}
+function fmtDateObj(d) {
+  const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  return fmtDateISO(iso, { long: true });
+}
+
+/* ---------------------------------------------------------------- state */
+const STORE_KEY = "sorndi.v2";
+
+function defaultState() {
+  return {
+    version: 2,
+    settings: { lang: "en", theme: "system", teacherName: "", school: "" },
+    classes: [], students: [], objectives: [], lessons: [], sessions: [],
+    attendance: [], assessments: [], scores: [], recordTemplates: [], recordEntries: [],
+    quizzes: [], quizRuns: [],
+  };
+}
+
+let db = defaultState();
+let saveTimer = null;
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      db = Object.assign(defaultState(), parsed);
+      db.settings = Object.assign({ lang: "en", theme: "system", teacherName: "", school: "" }, parsed.settings);
+    }
+  } catch (e) {
+    console.warn("SornDi: could not read saved data, starting fresh", e);
+    db = defaultState();
+  }
+}
+
+function save() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(db)); }
+    catch (e) { toast("Could not save: storage is full or blocked", true); }
+  }, 200);
+}
+
+function uid() { return SorndiCore.uid(); }
+
+/* ---------------------------------------------------------------- lookups */
+const byId = (arr, id) => arr.find(x => x.id === id) || null;
+const cls = id => byId(db.classes, id);
+const lesson = id => byId(db.lessons, id);
+const session = id => byId(db.sessions, id);
+const quiz = id => byId(db.quizzes, id);
+
+function classStudents(classId, activeOnly = true) {
+  return db.students
+    .filter(s => s.classId === classId && (!activeOnly || s.active))
+    .sort((a, b) => (a.studentNumber || "").localeCompare(b.studentNumber || "", LANG === "th" ? "th" : "en", { numeric: true }) || a.fullName.localeCompare(b.fullName));
+}
+function classSessions(classId) {
+  return db.sessions.filter(s => s.classId === classId).sort((a, b) => (b.date + (b.startTime || "")).localeCompare(a.date + (a.startTime || "")));
+}
+function classLessons(classId) {
+  return db.lessons.filter(l => l.classId === classId).sort((a, b) => b.createdAt - a.createdAt);
+}
+function classAssessments(classId) {
+  return db.assessments.filter(a => a.classId === classId).sort((a, b) => (a.date || "").localeCompare(b.date || "") || a.createdAt - b.createdAt);
+}
+function sessionAttendance(sessionId) {
+  const map = {};
+  for (const r of db.attendance) if (r.sessionId === sessionId) map[r.studentId] = r;
+  return map;
+}
+function allAttendanceForClass(classId) {
+  const ids = new Set(db.sessions.filter(s => s.classId === classId).map(s => s.id));
+  return db.attendance.filter(r => ids.has(r.sessionId));
+}
+function getScore(assessmentId, studentId) {
+  const r = db.scores.find(s => s.assessmentId === assessmentId && s.studentId === studentId);
+  return r ? r.value : null;
+}
+function slotMinutesFor(classId) {
+  const c = cls(classId);
+  if (!c || !c.timetable || !c.timetable.length) return null;
+  const slots = c.timetable.map(s => {
+    if (!s.start || !s.end) return null;
+    const [sh, sm] = s.start.split(":").map(Number);
+    const [eh, em] = s.end.split(":").map(Number);
+    return (eh * 60 + em) - (sh * 60 + sm);
+  }).filter(x => x && x > 0);
+  return slots.length ? Math.min(...slots) : null;
+}
+function nextSlotFor(classId, fromISO) {
+  const c = cls(classId);
+  if (!c || !c.timetable) return null;
+  const wd = SorndiCore.weekdayIndex(fromISO);
+  return c.timetable.filter(s => s.day === wd).sort((a, b) => (a.start || "").localeCompare(b.start || ""))[0] || null;
+}
+
+/* ---------------------------------------------------------------- mutations */
+function addAttendance(sessionId, studentId, status, note) {
+  const actor = db.settings.teacherName || "Teacher";
+  let rec = db.attendance.find(r => r.sessionId === sessionId && r.studentId === studentId);
+  if (!rec) {
+    rec = { id: uid(), sessionId, studentId, status: null, note: "", history: [] };
+    db.attendance.push(rec);
+  }
+  const changed = rec.status !== status || (note !== undefined && rec.note !== note);
+  if (rec.status !== null && rec.status !== status) {
+    rec.history.push({ from: rec.status, to: status, actor, at: new Date().toISOString() });
+  }
+  rec.status = status;
+  if (note !== undefined) rec.note = note;
+  rec.updatedAt = new Date().toISOString();
+  save();
+  return changed;
+}
+
+/* ---------------------------------------------------------------- toast, dialog */
+function toast(msg, isErr) {
+  const eld = document.createElement("div");
+  eld.className = "toast" + (isErr ? " error" : "");
+  eld.textContent = msg;
+  document.getElementById("toasts").appendChild(eld);
+  setTimeout(() => { eld.style.opacity = "0"; eld.style.transition = "opacity .3s"; }, 2200);
+  setTimeout(() => eld.remove(), 2600);
+}
+
+function openDialog(title, bodyHTML, footHTML, opts) {
+  closeDialog();
+  const ov = document.createElement("div");
+  ov.className = "overlay"; ov.id = "overlay";
+  ov.innerHTML = `<div class="dialog${opts && opts.wide ? " wide" : ""}" role="dialog" aria-modal="true" aria-label="${escAttr(title)}">
+    <div class="dialog-head"><h3>${esc(title)}</h3><button class="iconbtn" data-close aria-label="${t("act.close")}">${icon("x")}</button></div>
+    <div class="dialog-body">${bodyHTML}</div>
+    ${footHTML ? `<div class="dialog-foot">${footHTML}</div>` : ""}
+  </div>`;
+  ov.addEventListener("click", e => { if (e.target === ov) closeDialog(); });
+  document.body.appendChild(ov);
+  const f = ov.querySelector("input, select, textarea, button:not([data-close])");
+  if (f) f.focus();
+  return ov;
+}
+function closeDialog() { const eld = document.getElementById("overlay"); if (eld) eld.remove(); }
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeDialog();
+});
+
+/* ---------------------------------------------------------------- helpers */
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function escAttr(s) { return esc(s); }
+
+function eld_from(html) { const tpl = document.createElement("template"); tpl.innerHTML = html.trim(); return tpl.content.firstElementChild; }
+
+function downloadFile(name, content, mime) {
+  const blob = new Blob([content], { type: mime || "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
+}
+
+function statusTone(statusId) {
+  const s = SorndiCore.ATTENDANCE_STATUSES.find(s => s.id === statusId);
+  return s ? s.tone : "mut";
+}
+function statusChip(statusId) {
+  if (!statusId) return `<span class="chip mut" style="border-style:dashed">${esc(t("st.notRecorded"))}</span>`;
+  return `<span class="chip ${statusTone(statusId)}"><span class="dot"></span>${esc(t("st." + ({ absent_excused: "absentExcused", absent_unexcused: "absentUnexcused", left_early: "leftEarly" }[statusId] || statusId)))}</span>`;
+}
+function stKey(statusId) {
+  return "st." + ({ absent_excused: "absentExcused", absent_unexcused: "absentUnexcused", left_early: "leftEarly" }[statusId] || statusId);
+}
+
+function emptyState(iconName, titleKey, body, actionHTML) {
+  return `<div class="empty">${icon(iconName)}<div class="t">${esc(t(titleKey))}</div><div class="small">${body}</div>${actionHTML || ""}</div>`;
+}
+
+function sectionHead(titleKey, count, rightHTML) {
+  return `<div class="section-head">${TAB_GLYPH}<h2>${esc(t(titleKey))}</h2>${count !== undefined ? `<span class="count">${count}</span>` : ""}<span class="right">${rightHTML || ""}</span></div>`;
+}
+
+/* theme */
+function applyTheme() {
+  const pref = db.settings.theme;
+  const dark = pref === "dark" || (pref === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.dataset.theme = dark ? "dark" : "light";
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = dark ? "#14120F" : "#FAF9F6";
+}
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
+
+/* ---------------------------------------------------------------- router */
+const routes = [];
+function route(pattern, handler) {
+  routes.push({ pattern, handler });
+}
+function parseHash() {
+  return (location.hash || "#/today").replace(/^#/, "");
+}
+async function renderRoute() {
+  closeDialog();
+  const path = parseHash();
+  for (const r of routes) {
+    const m = path.match(r.pattern);
+    if (m) { r.handler(...m.slice(1)); return; }
+  }
+  location.hash = "#/today";
+}
+window.addEventListener("hashchange", renderRoute);
+
+function setActiveNav(name) {
+  document.querySelectorAll(".nav-item").forEach(b => b.classList.toggle("active", b.dataset.nav === name));
+}
+
+function setView(html, navName, crumb) {
+  setActiveNav(navName);
+  const main = document.getElementById("view");
+  main.innerHTML = `<div class="view">${html}</div>`;
+  main.scrollTop = 0;
+  document.getElementById("crumb").innerHTML = crumb || "";
+  window.scrollTo(0, 0);
+}
+
+/* render the shell (sidebar + topbar) once */
+function renderShell() {
+  const nav = (name, iconName, labelKey) =>
+    `<button class="nav-item" data-nav="${name}" data-go="#/${name}">${icon(iconName)}<span>${t(labelKey)}</span></button>`;
+  document.getElementById("sidebar").innerHTML = `
+    <a class="brand" href="#/today" style="text-decoration:none;color:inherit">
+      ${markSVG("mark", "var(--accent)")}
+      <span><span class="name">SORNDI</span><span class="sub">${t("app.tagline")} · v2.0</span></span>
+    </a>
+    ${nav("today", "today", "nav.today")}
+    ${nav("classes", "classes", "nav.classes")}
+    ${nav("studio", "studio", "nav.studio")}
+    ${nav("tools", "tools", "nav.tools")}
+    ${nav("exports", "exports", "nav.exports")}
+    ${nav("settings", "settings", "nav.settings")}
+    <div class="foot">${t("shell.foot1")}<br>${t("shell.foot2")}</div>`;
+  document.getElementById("langbtn").innerHTML = icon("globe");
+  document.getElementById("langbtn").title = "English / ไทย";
+  document.getElementById("themebtn").innerHTML = icon(document.documentElement.dataset.theme === "dark" ? "sun" : "moon");
+}
+
+/* global click delegation */
+document.addEventListener("click", e => {
+  const go = e.target.closest("[data-go]");
+  if (go) { location.hash = go.dataset.go; return; }
+  if (e.target.closest("[data-close]")) { closeDialog(); return; }
+});
+
+/* refresh icon on theme button after toggle */
+function refreshTopbar() {
+  renderShell();
+}
+
+/* ================================================================ SORNDI views 1
+   Today, Classrooms, Class detail: Overview / Roster / Attendance. */
+
+/* ---------------------------------------------------------------- Today */
+route(/^\/today$/, () => {
+  const todayISOv = SorndiCore.todayISO();
+  const wd = SorndiCore.weekdayIndex(todayISOv);
+
+  const todaySessions = db.sessions
+    .filter(s => s.date === todayISOv)
+    .sort((a, b) => (a.startTime || "").localeCompare(b.startTime || ""));
+
+  const needs = [];
+  for (const s of db.sessions) {
+    if (s.date >= todayISOv) continue;
+    const att = Object.values(sessionAttendance(s.id));
+    if (!att.length || att.every(r => !r.status)) {
+      needs.push({ kind: "attendance", s });
+    } else if (s.status === "completed" && !s.reflection) {
+      needs.push({ kind: "reflection", s });
+    }
+  }
+  needs.sort((a, b) => b.s.date.localeCompare(a.s.date));
+  needs.splice(8);
+
+  const upcoming = [];
+  for (let i = 1; i <= 7 && upcoming.length < 6; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    const iso = SorndiCore.todayISO(d);
+    for (const c of db.classes.filter(c => !c.archived)) {
+      const slot = nextSlotFor(c.id, iso);
+      if (slot) upcoming.push({ date: iso, slot, c });
+    }
+  }
+  upcoming.sort((a, b) => a.date.localeCompare(b.date) || (a.slot.start || "").localeCompare(b.slot.start || ""));
+  upcoming.splice(6);
+
+  const openRefl = db.sessions.filter(s => s.status === "completed" && !s.reflection).length;
+
+  let html = `
+    <div class="page-title">${esc(fmtDateObj(new Date()))}</div>
+    <p class="page-sub">${esc(db.settings.teacherName ? `${db.settings.teacherName}${db.settings.school ? " · " + db.settings.school : ""}` : t("today.start"))}</p>`;
+
+  if (!db.classes.length) {
+    html += `<div class="card pad section">${emptyState("classes", "today.start",
+      esc(t("today.createFirst")),
+      `<button class="btn primary" data-go="#/classes">${icon("plus")}${esc(t("classes.new"))}</button>
+       <button class="btn" data-action="load-demo" style="margin-left:8px">${esc(t("set.demo"))}</button>`)}</div>`;
+  } else {
+    html += `<div class="stat-row section">
+      <div class="stat"><div class="n">${db.classes.filter(c => !c.archived).length}</div><div class="l">${esc(t("nav.classes"))}</div></div>
+      <div class="stat"><div class="n">${db.students.filter(s => s.active).length}</div><div class="l">${esc(t("class.students"))}</div></div>
+      <div class="stat"><div class="n">${db.lessons.filter(l => l.status === "ready").length}</div><div class="l">${esc(t("lesson.ready"))}</div></div>
+      ${openRefl ? `<div class="stat"><div class="n">${openRefl}</div><div class="l">${esc(t("today.missingReflection"))}</div></div>` : ""}
+    </div>`;
+  }
+
+  if (db.classes.length) {
+    html += `<div class="section">${sectionHead("today.sessions", todaySessions.length || undefined)}`;
+    if (!todaySessions.length) {
+      html += `<div class="card"><div class="empty" style="padding:28px">${icon("today")}<div class="t">${esc(t("today.noSessions"))}</div><div class="small">${esc(WEEKDAYS[LANG][wd])}</div></div></div>`;
+    } else {
+      html += `<div class="card">`;
+      for (const s of todaySessions) {
+        const c = cls(s.classId); const l = s.lessonId ? lesson(s.lessonId) : null;
+        const att = Object.values(sessionAttendance(s.id));
+        const attCount = att.filter(r => r.status).length;
+        const nStudents = classStudents(s.classId).length;
+        html += `<div style="display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid var(--line)">
+          <div class="mono" style="width:52px">${esc(s.startTime || "—")}</div>
+          <div style="flex:1;min-width:0">
+            <div><b>${esc(c ? c.name : "?")}</b>${l ? ` <span class="muted">· ${esc(l.title)}</span>` : ""}</div>
+            <div class="meta">${l && l.objective ? esc(l.objective) : ""}</div>
+          </div>
+          ${attCount ? `<span class="chip green">${attCount}/${nStudents} ${esc(t("nav.attendance"))}</span>` : `<button class="btn sm" data-action="go-att" data-session="${s.id}">${icon("check")}${esc(t("today.takeAttendance"))}</button>`}
+          ${l ? `<button class="btn sm ghost" data-action="open-lesson" data-id="${l.id}">${esc(t("today.openLesson"))}</button>` : ""}
+        </div>`;
+      }
+      html += `</div>`;
+    }
+    html += `</div>`;
+
+    if (needs.length) {
+      html += `<div class="section">${sectionHead("today.needs", needs.length)}`;
+      html += `<div class="card">`;
+      for (const n of needs) {
+        const c = cls(n.s.classId); const l = n.s.lessonId ? lesson(n.s.lessonId) : null;
+        html += `<div style="display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid var(--line)">
+          <span class="chip ${n.kind === "attendance" ? "amber" : "slate"}">${esc(n.kind === "attendance" ? t("today.attendanceNotRecorded") : t("today.missingReflection"))}</span>
+          <div style="flex:1;min-width:0"><span class="mono small muted">${esc(fmtDateISO(n.s.date))}</span> ${esc(c ? c.name : "")}${l ? ` · ${esc(l.title)}` : ""}</div>
+          <button class="btn sm ghost" data-action="go-att" data-session="${n.s.id}">${icon("arrowR")}${esc(t("act.open"))}</button>
+        </div>`;
+      }
+      html += `</div></div>`;
+    }
+
+    if (upcoming.length) {
+      html += `<div class="section">${sectionHead("today.upcoming")}`;
+      html += `<div class="card">`;
+      for (const u of upcoming) {
+        html += `<div style="display:flex;align-items:center;gap:14px;padding:10px 18px;border-bottom:1px solid var(--line)">
+          <div class="mono small muted" style="width:96px">${esc(WEEKDAYS_SHORT[LANG][u.slot.day])} ${esc(fmtDateISO(u.date))}</div>
+          <div style="flex:1"><b>${esc(u.c.name)}</b> <span class="muted mono small">${esc(u.slot.start || "")}–${esc(u.slot.end || "")}</span></div>
+          <button class="btn sm ghost" data-action="open-class" data-id="${u.c.id}">${esc(t("today.prepare"))}</button>
+        </div>`;
+      }
+      html += `</div></div>`;
+    }
+  }
+  setView(html, "today");
+});
+
+/* ---------------------------------------------------------------- Classes list */
+route(/^\/classes$/, () => {
+  const active = db.classes.filter(c => !c.archived);
+  const archived = db.classes.filter(c => c.archived);
+  let html = `<div style="display:flex;align-items:center;gap:12px">
+      <div><div class="page-title">${esc(t("classes.title"))}</div></div>
+      <span style="flex:1"></span>
+      <button class="btn primary" data-action="new-class">${icon("plus")}${esc(t("classes.new"))}</button>
+    </div>`;
+  if (!active.length) {
+    html += `<div class="card pad section">${emptyState("classes", "classes.empty",
+      esc(t("today.createFirst")),
+      `<button class="btn primary" data-action="new-class">${icon("plus")}${esc(t("classes.new"))}</button>`)}</div>`;
+  } else {
+    html += `<div class="class-grid section">`;
+    for (const c of active) {
+      const n = classStudents(c.id).length;
+      const recent = classSessions(c.id)[0];
+      html += `<div class="card class-card" data-action="open-class" data-id="${c.id}" role="button" tabindex="0">
+        <div class="name">${esc(c.name)}</div>
+        <div class="meta meta-line">${esc([c.subject, c.gradeLevel, c.room].filter(Boolean).join(" · ")) || "&nbsp;"}</div>
+        <div class="meta" style="margin-top:10px">
+          <span class="mono">${n}</span> ${esc(t("class.students"))}
+          ${recent ? ` · <span class="mono">${esc(fmtDateISO(recent.date))}</span>` : ""}
+        </div>
+        ${c.term ? `<div class="meta" style="margin-top:2px">${esc(c.term)}</div>` : ""}
+      </div>`;
+    }
+    html += `</div>`;
+  }
+  if (archived.length) {
+    html += `<div class="section">${sectionHead("class.archive", archived.length)}<div class="card">`;
+    for (const c of archived) {
+      html += `<div style="display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line)">
+        <span style="flex:1">${esc(c.name)} <span class="muted small">· ${esc(t("class.archive"))}</span></span>
+        <button class="btn sm" data-action="unarchive-class" data-id="${c.id}">${esc(t("class.unarchive"))}</button>
+      </div>`;
+    }
+    html += `</div></div>`;
+  }
+  setView(html, "classes");
+});
+
+/* ---------------------------------------------------------------- New / edit class dialog */
+function classDialog(existing) {
+  const c = existing || { name: "", subject: "", gradeLevel: "", room: "", term: "", timetable: [] };
+  const dayOpts = (sel) => WEEKDAYS_SHORT[LANG === "th" ? "th" : "en"].map((d, i) =>
+    `<option value="${i}" ${sel === i ? "selected" : ""}>${d}</option>`).join("");
+  const rows = (c.timetable && c.timetable.length ? c.timetable : [{}]).map(s => `
+    <div class="row tt-row" style="align-items:center;margin-bottom:8px">
+      <select class="input tt-day" style="flex:1.2">${[1,2,3,4,5,6,0].map(i => `<option value="${i}" ${Number(s.day) === i ? "selected" : ""}>${WEEKDAYS_SHORT[LANG][i]}</option>`).join("")}</select>
+      <input class="input tt-start" type="time" value="${esc(s.start || "")}">
+      <input class="input tt-end" type="time" value="${esc(s.end || "")}">
+      <button class="iconbtn tt-del">${icon("trash")}</button>
+    </div>`).join("");
+  const ov = openDialog(existing ? t("act.edit") : t("classes.new"), `
+    <label class="field"><span>${t("class.name")} *</span><input class="input" id="cf-name" value="${escAttr(c.name)}"></label>
+    <div class="row">
+      <label class="field"><span>${t("class.subject")}</span><input class="input" id="cf-subject" value="${escAttr(c.subject)}"></label>
+      <label class="field"><span>${t("class.grade")}</span><input class="input" id="cf-grade" value="${escAttr(c.gradeLevel)}"></label>
+    </div>
+    <div class="row">
+      <label class="field"><span>${t("class.room")}</span><input class="input" id="cf-room" value="${escAttr(c.room)}"></label>
+      <label class="field"><span>${t("class.term")}</span><input class="input" id="cf-term" value="${escAttr(c.term)}"></label>
+    </div>
+    <label class="field"><span>${t("class.timetable")}</span><div id="tt-rows">${rows}</div>
+      <button class="btn sm" id="tt-add">${icon("plus")}${esc(t("act.add"))}</button>
+    </label>
+  `, `<button class="btn primary" id="cf-save">${esc(t("act.save"))}</button>`);
+  ov.querySelector("#tt-add").addEventListener("click", () => {
+    const div = eld_from(`<div class="row tt-row" style="align-items:center;margin-bottom:8px">
+      <select class="input tt-day" style="flex:1.2">${[1,2,3,4,5,6,0].map(i => `<option value="${i}">${WEEKDAYS_SHORT[LANG][i]}</option>`).join("")}</select>
+      <input class="input tt-start" type="time"><input class="input tt-end" type="time">
+      <button class="iconbtn tt-del">${icon("trash")}</button></div>`);
+    div.querySelector(".tt-del").addEventListener("click", () => div.remove());
+    ov.querySelector("#tt-rows").appendChild(div);
+  });
+  ov.querySelectorAll(".tt-del").forEach(b => b.addEventListener("click", e => e.target.closest(".tt-row").remove()));
+  ov.querySelector("#cf-save").addEventListener("click", () => {
+    const name = ov.querySelector("#cf-name").value.trim();
+    if (!name) { ov.querySelector("#cf-name").focus(); return; }
+    const timetable = [...ov.querySelectorAll(".tt-row")].map(r => ({
+      day: Number(r.querySelector(".tt-day").value),
+      start: r.querySelector(".tt-start").value || "",
+      end: r.querySelector(".tt-end").value || "",
+    })).filter(s => s.start || s.end);
+    const data = {
+      name,
+      subject: ov.querySelector("#cf-subject").value.trim(),
+      gradeLevel: ov.querySelector("#cf-grade").value.trim(),
+      room: ov.querySelector("#cf-room").value.trim(),
+      term: ov.querySelector("#cf-term").value.trim(),
+      timetable,
+    };
+    if (existing) Object.assign(existing, data);
+    else db.classes.push({ id: uid(), createdAt: Date.now(), archived: false, ...data });
+    save(); closeDialog(); renderRoute();
+  });
+}
+
+/* ---------------------------------------------------------------- Class detail */
+route(/^\/class\/([a-z0-9]+)(?:\/([a-z]+))?$/, (classId, tab) => {
+  const c = cls(classId);
+  if (!c) { location.hash = "#/classes"; return; }
+  tab = tab || "overview";
+  const tabs = [["overview", "nav.overview"], ["roster", "nav.roster"], ["attendance", "nav.attendance"], ["lessons", "nav.lessons"], ["scorebook", "nav.scorebook"], ["records", "nav.records"]];
+  let html = `<div style="display:flex;align-items:center;gap:10px">
+      <button class="iconbtn" data-go="#/classes" aria-label="${t("act.back")}">${icon("chevR").replace('class=""', 'style="transform:rotate(180deg)"')}</button>
+      <div>
+        <div class="page-title">${esc(c.name)}</div>
+        <div class="meta">${esc([c.subject, c.gradeLevel, c.room, c.term].filter(Boolean).join(" · "))}</div>
+      </div>
+      <span style="flex:1"></span>
+      <button class="btn sm" data-action="edit-class" data-id="${c.id}">${icon("edit")}${esc(t("act.edit"))}</button>
+    </div>
+    <div class="tabs" style="margin-top:18px">
+      ${tabs.map(([id, key]) => `<button class="tab${tab === id ? " active" : ""}" data-action="class-tab" data-tab="${id}" data-id="${c.id}">${esc(t(key))}</button>`).join("")}
+    </div><div id="class-tab-content"></div>`;
+  setView(html, "classes", `<b>${esc(c.name)}</b>`);
+  const content = document.getElementById("class-tab-content");
+  if (tab === "overview") renderClassOverview(content, c);
+  else if (tab === "roster") renderRoster(content, c);
+  else if (tab === "attendance") renderAttendance(content, c);
+  else if (tab === "lessons") renderClassLessons(content, c);
+  else if (tab === "scorebook") renderScorebook(content, c);
+  else if (tab === "records") renderRecords(content, c);
+});
+
+/* ---------------------------------------------------------------- Overview tab */
+function renderClassOverview(root, c) {
+  const students = classStudents(c.id);
+  const sessions = classSessions(c.id);
+  const rate = SorndiCore.attendanceRate(allAttendanceForClass(c.id));
+  const lessons = classLessons(c.id);
+  const ready = lessons.filter(l => l.status === "ready").length;
+
+  let html = `<div class="stat-row">
+    <div class="stat"><div class="n">${students.length}</div><div class="l">${t("class.students")}</div></div>
+    <div class="stat"><div class="n">${ready}</div><div class="l">${t("lesson.ready")}</div></div>
+    <div class="stat"><div class="n">${sessions.length}</div><div class="l">${t("att.session")}</div></div>
+    <div class="stat"><div class="n">${rate === null ? "—" : rate + "%"}</div><div class="l">${t("class.attRate")}</div></div>
+  </div>`;
+
+  if (c.timetable && c.timetable.length) {
+    html += `<div class="section">${sectionHead("class.timetable", c.timetable.length)}<div class="card">`;
+    for (const s of [...c.timetable].sort((a, b) => a.day - b.day || (a.start || "").localeCompare(b.start || ""))) {
+      html += `<div style="display:flex;gap:14px;padding:9px 16px;border-bottom:1px solid var(--line)">
+        <span class="mono small muted" style="width:36px">${esc(WEEKDAYS_SHORT[LANG][s.day])}</span>
+        <span class="mono small">${esc(s.start || "")}–${esc(s.end || "")}</span></div>`;
+    }
+    html += `</div></div>`;
+  }
+
+  html += `<div class="section">${sectionHead("class.recentSessions", sessions.length || undefined)}
+    <div class="card">`;
+  if (!sessions.length) {
+    html += `<div class="empty" style="padding:26px">${icon("clock")}<div class="t">${esc(t("empty.noSessions"))}</div>
+      <button class="btn sm" data-action="new-session" data-id="${c.id}">${icon("plus")}${esc(t("att.newSession"))}</button></div>`;
+  } else {
+    for (const s of sessions.slice(0, 6)) {
+      const l = s.lessonId ? lesson(s.lessonId) : null;
+      const att = sessionAttendance(s.id);
+      const counts = SorndiCore.attendanceSummary(Object.values(att));
+      html += `<div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);cursor:pointer" data-action="go-att" data-session="${s.id}">
+        <span class="mono small" style="width:92px">${esc(fmtDateISO(s.date))}</span>
+        <span style="flex:1;min-width:0">${l ? esc(l.title) : `<span class="muted">${esc(t("att.session"))}</span>`}</span>
+        ${counts.not_recorded ? `<span class="chip mut">${counts.not_recorded} ·</span>` : ""}
+        <span class="chip green">${counts.present}</span>
+        ${counts.late ? `<span class="chip amber">${counts.late}</span>` : ""}
+        ${counts.absent_unexcused + counts.absent_excused ? `<span class="chip red">${counts.absent_unexcused + counts.absent_excused}</span>` : ""}
+      </div>`;
+    }
+  }
+  html += `</div></div>`;
+  root.innerHTML = html;
+}
+
+/* ---------------------------------------------------------------- Roster tab */
+function renderRoster(root, c) {
+  const students = db.students.filter(s => s.classId === c.id).sort((a, b) => (b.active ? 1 : 0) - (a.active ? 1 : 0) || (a.studentNumber || "").localeCompare(b.studentNumber || "", undefined, { numeric: true }));
+  let html = `<div style="display:flex;gap:8px;margin-bottom:14px">
+    <button class="btn primary" data-action="add-student" data-id="${c.id}">${icon("plus")}${t("class.addStudent")}</button>
+    <button class="btn" data-action="import-roster" data-id="${c.id}">${icon("upload")}${t("class.importRoster")}</button>
+  </div><div class="card"><table class="table"><thead><tr>
+    <th style="width:64px">${t("roster.number")}</th><th>${t("roster.name")}</th><th>${t("roster.notes")}</th><th style="width:90px"></th>
+  </tr></thead><tbody>`;
+  if (!students.length) {
+    html += `<tr><td colspan="4"><div class="empty" style="padding:26px">${icon("users")}<div class="t">${t("class.students")}</div><div class="small">${t("roster.importHint")}</div></div></td></tr>`;
+  } else {
+    for (const s of students) {
+      html += `<tr ${s.active ? "" : 'style="opacity:.45"'}>
+        <td class="num">${esc(s.studentNumber)}</td>
+        <td>${esc(s.fullName)}${s.active ? "" : ` <span class="chip mut">${t("class.archive")}</span>`}</td>
+        <td class="muted small">${esc(s.notes || "")}</td>
+        <td class="actions"><button class="iconbtn" data-action="edit-student" data-id="${s.id}" aria-label="${t("act.edit")}">${icon("edit")}</button>
+        <button class="iconbtn" data-action="del-student" data-id="${s.id}" aria-label="${t("act.delete")}">${icon("trash")}</button></td>
+      </tr>`;
+    }
+  }
+  html += `</tbody></table></div>`;
+  root.innerHTML = html;
+}
+
+function studentDialog(c, existing) {
+  openDialog(existing ? t("act.edit") : t("class.addStudent"), `
+    <div class="row">
+      <label class="field"><span>${t("roster.number")}</span><input class="input" id="sf-num" value="${escAttr(existing ? existing.studentNumber : nextStudentNumber(c.id))}"></label>
+      <label class="field" style="flex:2.4"><span>${t("roster.name")} *</span><input class="input" id="sf-name" value="${escAttr(existing ? existing.fullName : "")}"></label>
+    </div>
+    <label class="field"><span>${t("roster.notes")}</span><input class="input" id="sf-notes" value="${escAttr(existing ? existing.notes : "")}"></label>
+    ${existing ? `<label class="check"><input type="checkbox" id="sf-active" ${existing.active ? "checked" : ""}> ${esc(t("nav.roster"))} — ${esc(t("class.archive"))}?</label>` : ""}
+  `, `<button class="btn primary" id="sf-save">${t("act.save")}</button>`);
+  const ov = document.getElementById("overlay");
+  ov.querySelector("#sf-save").addEventListener("click", () => {
+    const name = ov.querySelector("#sf-name").value.trim();
+    if (!name) { ov.querySelector("#sf-name").focus(); return; }
+    const data = {
+      studentNumber: ov.querySelector("#sf-num").value.trim(),
+      fullName: name,
+      notes: ov.querySelector("#sf-notes").value.trim(),
+    };
+    if (existing) {
+      Object.assign(existing, data);
+      if (ov.querySelector("#sf-active")) existing.active = ov.querySelector("#sf-active").checked;
+    } else {
+      db.students.push({ id: uid(), classId: c.id, active: true, ...data });
+    }
+    save(); closeDialog(); renderRoute();
+  });
+}
+
+function nextStudentNumber(classId) {
+  const nums = classStudents(classId, false).map(s => parseInt(s.studentNumber, 10)).filter(n => !isNaN(n));
+  return String((nums.length ? Math.max(...nums) : 0) + 1);
+}
+
+function importRosterDialog(c) {
+  openDialog(t("class.importRoster"), `
+    <p class="hint" style="margin-bottom:10px">${t("roster.importHint")}</p>
+    <textarea class="input" id="ir-text" rows="9" placeholder="1, Somchai Jaidee\n2, Malee Sookjai\nAnna Wittaya"></textarea>
+  `, `<button class="btn primary" id="ir-save">${t("act.add")}</button>`);
+  const ov = document.getElementById("overlay");
+  ov.querySelector("#ir-save").addEventListener("click", () => {
+    const lines = ov.querySelector("#ir-text").value.split("\n").map(l => l.trim()).filter(Boolean);
+    let n = 0;
+    let next = parseInt(nextStudentNumber(c.id), 10) || 1;
+    for (const line of lines) {
+      const m = line.match(/^(\d+)\s*[,.:;]?\s*(.+)$/);
+      const num = m ? m[1] : String(next);
+      const name = (m ? m[2] : line).trim();
+      if (!name) continue;
+      db.students.push({ id: uid(), classId: c.id, studentNumber: num, fullName: name, notes: "", active: true });
+      next = (parseInt(num, 10) || next) + 1;
+      n++;
+    }
+    save(); closeDialog(); renderRoute(); toast(`${n} ${t("class.students")}`);
+  });
+}
+
+/* ---------------------------------------------------------------- Attendance tab */
+function renderAttendance(root, c) {
+  const sessions = classSessions(c.id);
+  let html = `<div style="display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap">
+    <select class="input" id="att-session" style="max-width:380px">
+      ${sessions.length ? sessions.map(s => {
+        const l = s.lessonId ? lesson(s.lessonId) : null;
+        return `<option value="${s.id}">${esc(fmtDateISO(s.date))} · ${esc(l ? l.title : t("att.session"))}${s.startTime ? " · " + esc(s.startTime) : ""}</option>`;
+      }).join("") : ""}
+    </select>
+    <button class="btn primary" data-action="new-session" data-id="${c.id}">${icon("plus")}${t("att.newSession")}</button>
+  </div><div id="att-area"></div>`;
+  if (!sessions.length) {
+    html = `<div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="btn primary" data-action="new-session" data-id="${c.id}">${icon("plus")}${t("att.newSession")}</button></div>
+      <div class="card">${emptyState("check", "att.pickSession", esc(t("empty.noSessions")))}</div><div id="att-area"></div>`;
+  }
+  root.innerHTML = html;
+  const sel = root.querySelector("#att-session");
+  if (sel && sessions.length) {
+    sel.addEventListener("change", () => renderAttendanceRows(document.getElementById("att-area"), cls(c.id), sel.value));
+    renderAttendanceRows(document.getElementById("att-area"), c, sel.value);
+  }
+}
+
+function sessionDialog(c) {
+  const lessons = classLessons(c.id);
+  openDialog(t("att.newSession"), `
+    <div class="row">
+      <label class="field"><span>${t("att.date")} *</span><input class="input" type="date" id="ns-date" value="${SorndiCore.todayISO()}"></label>
+      <label class="field"><span>${t("today.sessions")} · ${t("class.timetable")}</span><input class="input" type="time" id="ns-time"></label>
+    </div>
+    <label class="field"><span>${t("nav.lessons")}</span>
+      <select class="input" id="ns-lesson">
+        <option value="">—</option>
+        ${lessons.map(l => `<option value="${l.id}">${esc(l.title)}</option>`).join("")}
+      </select></label>
+  `, `<button class="btn primary" id="ns-save">${t("act.create")}</button>`);
+  const ov = document.getElementById("overlay");
+  ov.querySelector("#ns-save").addEventListener("click", () => {
+    const date = ov.querySelector("#ns-date").value;
+    if (!date) return;
+    const s = {
+      id: uid(), classId: c.id,
+      lessonId: ov.querySelector("#ns-lesson").value || null,
+      date, startTime: ov.querySelector("#ns-time").value || "",
+      status: "planned", reflection: "", nextAction: "",
+      createdAt: Date.now(),
+    };
+    db.sessions.push(s); save(); closeDialog();
+    location.hash = `#/class/${c.id}/attendance`;
+    renderRoute();
+    setTimeout(() => {
+      const sel = document.getElementById("att-session");
+      if (sel) { sel.value = s.id; sel.dispatchEvent(new Event("change")); }
+    }, 60);
+  });
+}
+
+function renderAttendanceRows(root, c, sessionIdValue) {
+  const s = session(sessionIdValue);
+  if (!s) { root.innerHTML = ""; return; }
+  const students = classStudents(c.id);
+  const att = sessionAttendance(s.id);
+  const counts = SorndiCore.attendanceSummary(students.map(st => att[st.id]));
+
+  let html = `<div class="card">
+    <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap">
+      <b>${esc(fmtDateISO(s.date, { long: true }))}</b>
+      ${s.lessonId && lesson(s.lessonId) ? `<span class="muted small">· ${esc(lesson(s.lessonId).title)}</span>` : ""}
+      <span style="flex:1"></span>
+      <button class="btn sm primary" data-action="mark-all" data-session="${s.id}">${icon("check")}${t("att.markAll")}</button>
+    </div>
+    <div class="attendance-summary" style="padding:10px 16px;border-bottom:1px solid var(--line)" id="att-counts">
+      <span class="chip green">${t("st.present")} <span class="mono">${counts.present}</span></span>
+      <span class="chip amber">${t("st.late")} <span class="mono">${counts.late}</span></span>
+      <span class="chip slate">${t("st.absentExcused")} <span class="mono">${counts.absent_excused}</span></span>
+      <span class="chip red">${t("st.absentUnexcused")} <span class="mono">${counts.absent_unexcused}</span></span>
+      <span class="chip clay">${t("st.sick")} <span class="mono">${counts.sick}</span></span>
+      <span class="chip mut" style="border-style:dashed">${t("st.notRecorded")} <span class="mono">${counts.not_recorded}</span></span>
+    </div>
+    <table class="table"><tbody id="att-rows">`;
+  if (!students.length) {
+    html += `<tr><td>${emptyState("users", "class.students", esc(t("roster.importHint")), `<button class="btn sm" data-action="add-student" data-id="${c.id}">${icon("plus")}${t("class.addStudent")}</button>`)}</td></tr>`;
+  }
+  for (const st of students) {
+    const rec = att[st.id];
+    html += attendanceRowHTML(s.id, st, rec);
+  }
+  html += `</tbody></table></div>
+  <div class="note" style="margin-top:10px">${t("att.notCounted")}</div>`;
+  root.innerHTML = html;
+}
+
+function attendanceRowHTML(sessionId, st, rec) {
+  const btns = SorndiCore.ATTENDANCE_STATUSES.map(s =>
+    `<button class="st-btn ${s.tone} ${rec && rec.status === s.id ? "on " + s.tone : ""}" data-att="${s.id}" data-student="${st.id}" data-session="${sessionId}" title="${esc(t(s.key))}">${esc(t(s.key))}</button>`).join("");
+  const history = rec && rec.history && rec.history.length ? `
+    <div class="att-history" style="display:none;margin-top:6px">
+      ${rec.history.map(h => `<div class="meta">${esc(t("att.correction"))}: ${esc(t(stKey(h.from)))} → <b>${esc(t(stKey(h.to)))}</b> · ${esc(h.actor)} · ${new Date(h.at).toLocaleString(LANG === "th" ? "th-TH" : "en-GB")}</div>`).join("")}
+    </div>` : "";
+  return `<tr data-row="${st.id}" tabindex="0">
+    <td class="num" style="width:44px">${esc(st.studentNumber)}</td>
+    <td style="min-width:140px"><b>${esc(st.fullName)}</b>
+      ${rec && rec.status ? `<button class="iconbtn" style="width:22px;height:22px;vertical-align:middle" data-att-history="${st.id}" title="${t("att.history")}">${icon("history")}</button>${history}` : ""}
+    </td>
+    <td><div class="status-btns">${btns}</div>
+      <input class="input" style="margin-top:6px;max-width:340px;font-size:12.5px;padding:4px 8px" placeholder="${esc(t("roster.notes"))}…" value="${escAttr(rec && rec.note || "")}" data-att-note="${st.id}" data-session="${sessionId}">
+    </td>
+  </tr>`;
+}
+
+function updateAttendanceCounters(rootEl, sessionId, classId) {
+  const students = classStudents(classId);
+  const att = sessionAttendance(sessionId);
+  const counts = SorndiCore.attendanceSummary(students.map(st => att[st.id]));
+  const box = rootEl.querySelector("#att-counts");
+  if (box) box.innerHTML =
+    `<span class="chip green">${t("st.present")} <span class="mono">${counts.present}</span></span>
+     <span class="chip amber">${t("st.late")} <span class="mono">${counts.late}</span></span>
+     <span class="chip slate">${t("st.absentExcused")} <span class="mono">${counts.absent_excused}</span></span>
+     <span class="chip red">${t("st.absentUnexcused")} <span class="mono">${counts.absent_unexcused}</span></span>
+     <span class="chip clay">${t("st.sick")} <span class="mono">${counts.sick}</span></span>
+     <span class="chip mut" style="border-style:dashed">${t("st.notRecorded")} <span class="mono">${counts.not_recorded}</span></span>`;
+}
+
+/* ================================================================ SORNDI views 2
+   Lessons (class tab), Scorebook, Daily records. */
+
+/* ---------------------------------------------------------------- Lessons tab (class) */
+function renderClassLessons(root, c) {
+  const lessons = classLessons(c.id);
+  let html = `<div style="display:flex;gap:8px;margin-bottom:14px">
+    <button class="btn primary" data-action="new-lesson" data-id="${c.id}">${icon("plus")}${t("lesson.new")}</button>
+  </div>`;
+  if (!lessons.length) {
+    html += `<div class="card">${emptyState("book", "empty.noLessons", esc(t("lesson.template") + " → " + t("lesson.stages")), `<button class="btn sm" data-action="new-lesson" data-id="${c.id}">${icon("plus")}${t("lesson.new")}</button>`)}</div>`;
+  } else {
+    html += `<div class="card">`;
+    for (const l of lessons) {
+      const statusTone = { draft: "mut", ready: "green", taught: "slate", cancelled: "red" }[l.status] || "mut";
+      html += `<div style="display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--line)">
+        <span class="chip ${statusTone}">${t("lesson." + l.status)}</span>
+        <div style="flex:1;min-width:0">
+          <b>${esc(l.title)}</b>
+          <div class="meta">${l.objective ? esc(l.objective) : ""}</div>
+        </div>
+        <span class="mono small muted">${l.plannedDate ? esc(fmtDateISO(l.plannedDate)) : ""}</span>
+        <button class="btn sm ghost" data-action="edit-lesson" data-id="${l.id}">${icon("edit")}${t("act.edit")}</button>
+        ${l.status === "ready" ? `<button class="btn sm" data-action="new-session-for-lesson" data-lesson="${l.id}" data-id="${c.id}">${icon("play")}${t("att.newSession")}</button>` : ""}
+        <button class="iconbtn" data-action="del-lesson" data-id="${l.id}" aria-label="${t("act.delete")}">${icon("trash")}</button>
+      </div>`;
+    }
+    html += `</div>`;
+  }
+  root.innerHTML = html;
+}
+
+function lessonDialog(c, existing) {
+  const templates = SorndiCore.LESSON_TEMPLATES;
+  const slotMin = slotMinutesFor(c.id);
+  openDialog(existing ? t("act.edit") : t("lesson.new"), `
+    <label class="field"><span>Lesson title *</span><input class="input" id="lf-title" value="${escAttr(existing ? existing.title : "")}"></label>
+    <label class="field"><span>${t("lesson.objective")} *</span>
+      <input class="input" id="lf-objective" value="${escAttr(existing ? existing.objective : "")}" placeholder="Students can…">
+      ${existing && existing.objective ? "" : `<div class="hint">${esc(t("warn.noObjective"))}</div>`}
+    </label>
+    <div class="row">
+      <label class="field"><span>${t("lesson.planned")}</span><input class="input" type="date" id="lf-date" value="${escAttr(existing ? existing.plannedDate || "" : "")}"></label>
+      <label class="field"><span>${t("lesson.status")}</span>
+        <select class="input" id="lf-status">
+          ${["draft", "ready", "taught", "cancelled"].map(s => `<option value="${s}" ${existing && existing.status === s ? "selected" : ""}>${t("lesson." + s)}</option>`).join("")}
+        </select></label>
+    </div>
+    <label class="field"><span>${t("lesson.template")}</span>
+      <select class="input" id="lf-template">
+        <option value="">—</option>
+        ${templates.map(tp => `<option value="${tp.id}" ${existing && existing.template === tp.id ? "selected" : ""}>${tp.stages.map(s => s.name).join(" · ")}</option>`).join("")}
+      </select>
+      <div class="hint">${esc(slotMin ? t("lesson.totalTime") + ": " + slotMin + " min" : "")}</div>
+    </label>
+    <div id="lf-stages"></div>
+  `, `<button class="btn primary" id="lf-save">${t("act.save")}</button>`, { wide: true });
+  const ov = document.getElementById("overlay");
+
+  function stageRow(s) {
+    const div = eld_from(`<div class="row" style="align-items:center;margin-bottom:6px">
+      <input class="input sg-name" style="flex:2" value="${escAttr(s.name || "")}" placeholder="${esc(t("lesson.stages"))}">
+      <input class="input sg-min num" style="flex:0 0 76px" type="number" min="0" value="${escAttr(s.minutes ?? "")}">
+      <span class="meta">min</span>
+      <button class="iconbtn sg-del">${icon("x")}</button>
+    </div>`);
+    div.querySelector(".sg-del").addEventListener("click", () => { div.remove(); updateTotal(); });
+    return div;
+  }
+  function readStages() {
+    return [...ov.querySelectorAll("#lf-stages .row")].map(r => ({
+      name: r.querySelector(".sg-name").value.trim(),
+      minutes: parseInt(r.querySelector(".sg-min").value, 10) || 0,
+    })).filter(s => s.name);
+  }
+  function updateTotal() {
+    const stages = readStages();
+    const total = SorndiCore.planTotalMinutes(stages);
+    const box = ov.querySelector("#lf-total");
+    if (box) box.innerHTML = `<span class="mono">${total}</span> min` + (slotMin && total > slotMin ? ` · <span style="color:var(--amber)">${esc(t("warn.overTime"))}</span>` : "");
+  }
+  function renderStages(stages) {
+    const box = ov.querySelector("#lf-stages");
+    box.innerHTML = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <b class="small">${esc(t("lesson.stages"))}</b><span class="meta" id="lf-total"></span></div>`;
+    for (const s of stages) box.appendChild(stageRow(s));
+    box.insertAdjacentHTML("beforeend", `<button class="btn sm" id="sg-add">${icon("plus")}${t("act.add")}</button>`);
+    box.querySelector("#sg-add").addEventListener("click", () => { box.querySelector("#sg-add").before(stageRow({})); updateTotal(); });
+    box.addEventListener("input", updateTotal);
+    updateTotal();
+  }
+  if (existing && existing.stages && existing.stages.length) renderStages(existing.stages);
+  ov.querySelector("#lf-template").addEventListener("change", e => {
+    const stages = SorndiCore.templateStages(e.target.value);
+    if (stages) renderStages(stages);
+  });
+  if (!existing) renderStages([]);
+  else updateTotal();
+
+  ov.querySelector("#lf-save").addEventListener("click", () => {
+    const title = ov.querySelector("#lf-title").value.trim();
+    const objective = ov.querySelector("#lf-objective").value.trim();
+    if (!title) { ov.querySelector("#lf-title").focus(); return; }
+    const stages = readStages();
+    const data = {
+      title, objective,
+      plannedDate: ov.querySelector("#lf-date").value || null,
+      status: ov.querySelector("#lf-status").value,
+      template: ov.querySelector("#lf-template").value || null,
+      stages,
+    };
+    if (existing) Object.assign(existing, data);
+    else db.lessons.push({ id: uid(), classId: c.id, createdAt: Date.now(), ...data });
+    save(); closeDialog(); renderRoute();
+  });
+}
+
+/* ---------------------------------------------------------------- Scorebook tab */
+function renderScorebook(root, c) {
+  const students = classStudents(c.id);
+  const assessments = classAssessments(c.id);
+  const objectives = db.objectives.filter(o => o.classId === c.id);
+  let html = `<div style="display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap">
+    <button class="btn primary" data-action="new-assessment" data-id="${c.id}">${icon("plus")}${t("score.new")}</button>
+    ${assessments.length ? `<button class="btn" data-action="export-scorebook" data-id="${c.id}">${icon("exports")}CSV</button>` : ""}
+  </div>`;
+  if (!assessments.length) {
+    root.innerHTML = html + `<div class="card">${emptyState("scorebook", "empty.noAssessments", esc(t("score.total") + " = Σ(pct × weight) / Σ(weight)"))}</div>`;
+    return;
+  }
+
+  html += `<div class="card" style="overflow-x:auto"><table class="table"><thead><tr><th style="min-width:150px">${t("roster.name")}</th>`;
+  for (const a of assessments) {
+    html += `<th title="${esc(a.category || "")}" style="text-align:center;min-width:86px">
+      <div style="font-weight:500">${esc(a.name)}</div>
+      <div class="meta mono">/${a.maxScore} · w${a.weight}</div></th>`;
+  }
+  html += `<th style="min-width:110px;text-align:right">${t("score.total")}</th><th style="width:40px"></th></tr></thead><tbody id="sb-rows">`;
+  for (const st of students) {
+    html += `<tr><td><b>${esc(st.fullName)}</b></td>`;
+    for (const a of assessments) {
+      const v = getScore(a.id, st.id);
+      html += `<td style="text-align:center">
+        <input class="input sb-cell" style="width:64px;text-align:center;padding:4px 6px" data-a="${a.id}" data-s="${st.id}" data-max="${a.maxScore}"
+          value="${typeof v === "number" ? v : ""}" inputmode="decimal" placeholder="—">
+        <div style="display:flex;gap:2px;justify-content:center;margin-top:3px">
+          <button class="st-btn ${v === "missing" ? "on red" : ""}" data-flag="missing" data-a="${a.id}" data-s="${st.id}" title="${t("score.missing")}">M</button>
+          <button class="st-btn ${v === "excused" ? "on slate" : ""}" data-flag="excused" data-a="${a.id}" data-s="${st.id}" title="${t("score.excused")}">E</button>
+        </div></td>`;
+    }
+    html += `<td style="text-align:right"><span class="mono sb-total" data-s="${st.id}">—</span></td>
+      <td><button class="iconbtn" data-math="${st.id}" title="${t("score.showMath")}">${icon("info")}</button></td></tr>`;
+  }
+  html += `</tbody></table></div>
+  <div class="note" style="margin-top:10px">M = ${t("score.missing")} · E = ${t("score.excused")} — ${esc("not zero")}. ${t("score.showMath")} → ${icon("info")}</div>`;
+  root.innerHTML = html;
+  updateAllTotals(root, c);
+  root.querySelector(".card").addEventListener("input", e => {
+    const cell = e.target.closest(".sb-cell");
+    if (!cell) return;
+    const aId = cell.dataset.a, sId = cell.dataset.s, max = Number(cell.dataset.max);
+    let val = cell.value.trim();
+    if (val === "") {
+      db.scores = db.scores.filter(r => !(r.assessmentId === aId && r.studentId === sId));
+    } else {
+      const num = Number(val);
+      if (isNaN(num)) return;
+      const clamped = Math.min(Math.max(num, 0), max);
+      if (clamped !== num) { cell.value = clamped; }
+      setScore(aId, sId, clamped);
+    }
+    save();
+    updateTotalCell(root, c, sId);
+    const avgCell = root.querySelector(`.sb-avg[data-a="${aId}"]`);
+    if (avgCell) avgCell.textContent = fmtNum(SorndiCore.assessmentStats(db.scores.filter(r => r.assessmentId === aId).map(r => r.value), max).average);
+  });
+  root.querySelector(".card").addEventListener("click", e => {
+    const flag = e.target.closest("[data-flag]");
+    if (flag) {
+      const aId = flag.dataset.a, sId = flag.dataset.s, kind = flag.dataset.flag;
+      const cur = getScore(aId, sId);
+      setScore(aId, sId, cur === kind ? null : kind);
+      save(); renderScorebook(root, c);
+      return;
+    }
+    const mathBtn = e.target.closest("[data-math]");
+    if (mathBtn) showCalculation(c, mathBtn.dataset.math);
+  });
+}
+
+function setScore(assessmentId, studentId, value) {
+  let r = db.scores.find(s => s.assessmentId === assessmentId && s.studentId === studentId);
+  if (value === null) {
+    if (r) db.scores.splice(db.scores.indexOf(r), 1);
+    return;
+  }
+  if (!r) { r = { assessmentId, studentId }; db.scores.push(r); }
+  r.value = value;
+}
+
+function fmtNum(n) {
+  return n === null || n === undefined ? "—" : (Math.round(n * 10) / 10).toFixed(1);
+}
+
+function updateTotalCell(root, c, studentId) {
+  const assessments = classAssessments(c.id);
+  const wt = SorndiCore.weightedTotal(assessments, studentId, getScore);
+  const cell = root.querySelector(`.sb-total[data-s="${studentId}"]`);
+  if (cell) cell.textContent = wt.total === null ? "—" : Math.round(wt.total) + "%";
+}
+
+function updateAllTotals(root, c) {
+  for (const st of classStudents(c.id)) updateTotalCell(root, c, st.id);
+  // class average row per assessment in header is optional; show averages under header via title
+}
+
+function showCalculation(c, studentId) {
+  const st = byId(db.students, studentId);
+  const assessments = classAssessments(c.id);
+  const wt = SorndiCore.weightedTotal(assessments, studentId, getScore);
+  let rows = wt.included.map(inc => {
+    const a = byId(assessments, inc.assessmentId);
+    return `${a.name.padEnd(22)} ${String(Math.round(inc.pct)).padStart(3)}%  × w${inc.weight}  →  ${(Math.round(inc.contribution * 10) / 10).toFixed(1)}`;
+  }).join("\n");
+  if (wt.missing) rows += `\n${t("score.missing")}: ${wt.missing} (excluded)`;
+  if (wt.excused) rows += `\n${t("score.excused")}: ${wt.excused} (excluded)`;
+  openDialog(`${t("score.formulaTitle")} — ${st ? st.fullName : ""}`, `
+    <div class="formula">total = Σ(pct × weight) / Σ(weight)
+
+${rows}
+
+Σ(weight) = ${wt.weightSum}
+total = ${wt.total === null ? "—" : (Math.round(wt.total * 10) / 10).toFixed(1) + "%"}</div>
+    <p class="hint" style="margin-top:10px">${t("score.missing")}/${t("score.excused")} ≠ 0</p>
+  `, `<button class="btn" data-close>${t("act.close")}</button>`);
+}
+
+function assessmentDialog(c) {
+  const lessons = classLessons(c.id);
+  openDialog(t("score.new"), `
+    <label class="field"><span>${t("score.name")} *</span><input class="input" id="af-name"></label>
+    <div class="row">
+      <label class="field"><span>${t("score.category")}</span>
+        <select class="input" id="af-cat">
+          <option>Quiz</option><option>Homework</option><option>Classwork</option><option>Project</option><option>Exam</option>
+        </select></label>
+      <label class="field"><span>${t("att.date")}</span><input class="input" type="date" id="af-date" value="${SorndiCore.todayISO()}"></label>
+    </div>
+    <div class="row">
+      <label class="field"><span>${t("score.max")}</span><input class="input" type="number" id="af-max" value="10" min="1"></label>
+      <label class="field"><span>${t("score.weight")}</span><input class="input" type="number" id="af-weight" value="1" min="0" step="0.5"></label>
+    </div>
+    <label class="field"><span>${t("lesson.objective")}</span>
+      <select class="input" id="af-objective">
+        <option value="">—</option>
+        ${db.objectives.filter(o => o.classId === c.id).map(o => `<option value="${o.id}">${esc(o.statement)}</option>`).join("")}
+      </select></label>
+  `, `<button class="btn primary" id="af-save">${t("act.create")}</button>`);
+  const ov = document.getElementById("overlay");
+  ov.querySelector("#af-save").addEventListener("click", () => {
+    const name = ov.querySelector("#af-name").value.trim();
+    if (!name) { ov.querySelector("#af-name").focus(); return; }
+    db.assessments.push({
+      id: uid(), classId: c.id, name,
+      category: ov.querySelector("#af-cat").value,
+      date: ov.querySelector("#af-date").value || null,
+      maxScore: Math.max(1, Number(ov.querySelector("#af-max").value) || 10),
+      weight: Math.max(0, Number(ov.querySelector("#af-weight").value) || 1),
+      objectiveId: ov.querySelector("#af-objective").value || null,
+      createdAt: Date.now(),
+    });
+    save(); closeDialog(); renderRoute();
+  });
+}
+
+/* ---------------------------------------------------------------- Daily records tab */
+function renderRecords(root, c) {
+  const templates = db.recordTemplates.filter(r => r.classId === c.id);
+  let html = `<div style="display:flex;gap:8px;margin-bottom:14px">
+    <button class="btn primary" data-action="new-template" data-id="${c.id}">${icon("plus")}${t("records.new")}</button>
+  </div>`;
+  if (!templates.length) {
+    html += `<div class="card">${emptyState("records", "empty.noRecords",
+      esc("Homework submitted · Reading log · Equipment returned · anything you check per student per day"),
+      `<button class="btn sm" data-action="new-template" data-id="${c.id}">${icon("plus")}${t("records.new")}</button>`)}</div>`;
+  } else {
+    html += `<div class="card">`;
+    for (const tp of templates) {
+      html += `<div style="display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--line)">
+        <div style="flex:1"><b>${esc(tp.name)}</b>
+          <div class="meta">${tp.fields.map(f => esc(f.label)).join(" · ")}</div></div>
+        <button class="btn sm" data-action="open-record-entry" data-id="${tp.id}">${icon("check")}${t("records.entry")}</button>
+        <button class="iconbtn" data-action="del-template" data-id="${tp.id}" aria-label="${t("act.delete")}">${icon("trash")}</button>
+      </div>`;
+    }
+    html += `</div><div class="note" style="margin-top:10px">${t("records.absenceRule")}</div><div id="record-entry"></div>`;
+  }
+  root.innerHTML = html;
+}
+
+function templateDialog(c) {
+  openDialog(t("records.new"), `
+    <label class="field"><span>${t("score.name")} *</span><input class="input" id="tf-name" placeholder="Homework submitted"></label>
+    <label class="field"><span>${t("records.fields")}</span>
+      <div id="tf-fields"></div>
+      <div class="row" style="margin-top:8px">
+        <select class="input" id="tf-kind"><option value="check">✓ / —</option><option value="score">0–10</option><option value="text">text</option></select>
+        <button class="btn sm" id="tf-add">${icon("plus")}${t("act.add")}</button>
+      </div>
+      <div class="hint">✓ / — works for routines; 0–10 for graded checks</div>
+    </label>
+  `, `<button class="btn primary" id="tf-save">${t("act.create")}</button>`);
+  const ov = document.getElementById("overlay");
+  function fieldRow() {
+    const div = eld_from(`<div class="row" style="margin-bottom:6px"><input class="input tf-label" placeholder="${esc(t("records.fields"))} — label"></div>`);
+    ov.querySelector("#tf-fields").appendChild(div);
+  }
+  ov.querySelector("#tf-add").addEventListener("click", fieldRow);
+  fieldRow();
+  ov.querySelector("#tf-save").addEventListener("click", () => {
+    const name = ov.querySelector("#tf-name").value.trim();
+    const fields = [...ov.querySelectorAll(".tf-label")].map((inp, i) => ({
+      id: "f" + i, label: inp.value.trim() || `Field ${i + 1}`, kind: ov.querySelector("#tf-kind").value,
+    }));
+    if (!name || !fields.length) return;
+    db.recordTemplates.push({ id: uid(), classId: c.id, name, fields, createdAt: Date.now() });
+    save(); closeDialog(); renderRoute();
+  });
+}
+
+function recordEntryDialog(tp) {
+  const c = cls(tp.classId);
+  const students = classStudents(tp.classId);
+  const sessions = classSessions(tp.classId);
+  openDialog(tp.name, `
+    <div class="row" style="margin-bottom:12px">
+      <label class="field"><span>${t("att.session")}</span>
+        <select class="input" id="re-session">
+          ${sessions.map(s => `<option value="${s.id}">${esc(fmtDateISO(s.date))}</option>`).join("")}
+        </select></label>
+    </div>
+    <div class="card" style="overflow-x:auto"><table class="table"><thead><tr>
+      <th>${t("roster.name")}</th>${tp.fields.map(f => `<th style="text-align:center">${esc(f.label)}</th>`).join("")}
+    </tr></thead><tbody>
+    ${students.map(st => {
+      const attRec = null;
+      return `<tr><td>${esc(st.fullName)}</td>
+        ${tp.fields.map(f => f.kind === "check"
+          ? `<td style="text-align:center"><button class="st-btn" data-re="${st.id}|${f.id}">✓</button></td>`
+          : `<td style="text-align:center"><input class="input re-cell" style="width:64px;text-align:center;padding:4px" data-re-cell="${st.id}|${f.id}"></td>`)
+        .join("")}</tr>`;
+    }).join("")}
+    </tbody></table></div>
+    <div class="note" style="margin-top:10px">${t("records.absenceRule")}</div>
+  `, `<button class="btn primary" data-close>${t("act.done")}</button>`, { wide: true });
+  const ov = document.getElementById("overlay");
+  const sessionIdSel = ov.querySelector("#re-session");
+  function key(sessionId, stId, fId) { return `${sessionId}|${stId}|${fId}`; }
+  function existing(sessionId, stId, fId) {
+    return db.recordEntries.find(r => r.templateId === tp.id && r.sessionId === sessionId && r.studentId === stId && r.fieldId === fId);
+  }
+  function applyAbsenceDefaults(sessionId) {
+    const s = session(sessionId);
+    if (!s) return;
+    const att = sessionAttendance(sessionId);
+    for (const st of students) {
+      const status = att[st.id] && att[st.id].status;
+      if (status && status !== "present" && status !== "remote" && status !== "late") {
+        for (const f of tp.fields) {
+          if (f.kind === "check" && !existing(sessionId, st.id, f.id)) {
+            db.recordEntries.push({ id: uid(), templateId: tp.id, sessionId, studentId: st.id, fieldId: f.id, value: "NA", auto: true, at: new Date().toISOString() });
+          }
+        }
+      }
+    }
+  }
+  function refreshMarks(sessionId) {
+    ov.querySelectorAll("[data-re]").forEach(btn => {
+      const [stId, fId] = btn.dataset.re.split("|");
+      btn.classList.toggle("on", !!existing(sessionId, stId, fId) && existing(sessionId, stId, fId).value === "✓");
+      btn.textContent = existing(sessionId, stId, fId) && existing(sessionId, stId, fId).value === "NA" ? "—" : "✓";
+    });
+    ov.querySelectorAll("[data-re-cell]").forEach(inp => {
+      const [stId, fId] = inp.dataset.reCell.split("|");
+      const r = existing(sessionId, stId, fId);
+      if (r && document.activeElement !== inp) inp.value = r.value;
+    });
+  }
+  if (sessionIdSel) {
+    sessionIdSel.addEventListener("change", () => { applyAbsenceDefaults(sessionIdSel.value); refreshMarks(sessionIdSel.value); });
+    applyAbsenceDefaults(sessionIdSel.value);
+    refreshMarks(sessionIdSel.value);
+    ov.addEventListener("click", e => {
+      const btn = e.target.closest("[data-re]");
+      if (!btn) return;
+      const [stId, fId] = btn.dataset.re.split("|");
+      const sessionId = sessionIdSel.value;
+      const r = existing(sessionId, stId, fId);
+      if (!r) db.recordEntries.push({ id: uid(), templateId: tp.id, sessionId, studentId: stId, fieldId: fId, value: "✓", at: new Date().toISOString() });
+      else if (r.value === "✓") r.value = "NA";
+      else db.recordEntries.splice(db.recordEntries.indexOf(r), 1);
+      save(); refreshMarks(sessionId);
+    });
+    ov.addEventListener("input", e => {
+      const inp = e.target.closest("[data-re-cell]");
+      if (!inp) return;
+      const [stId, fId] = inp.dataset.reCell.split("|");
+      const sessionId = sessionIdSel.value;
+      let r = existing(sessionId, stId, fId);
+      if (!r) { r = { id: uid(), templateId: tp.id, sessionId, studentId: stId, fieldId: fId, at: new Date().toISOString() }; db.recordEntries.push(r); }
+      r.value = inp.value;
+      save();
+    });
+  }
+}
+
+/* ================================================================ SORNDI views 3
+   Studio: lessons and quizzes. Quiz runner. Tools. */
+
+/* ---------------------------------------------------------------- Studio */
+route(/^\/studio$/, () => {
+  const lessons = [...db.lessons].sort((a, b) => b.createdAt - a.createdAt);
+  const quizzes = [...db.quizzes].sort((a, b) => b.createdAt - a.createdAt);
+  let html = `<div style="display:flex;align-items:center;gap:12px">
+    <div><div class="page-title">${t("nav.studio")}</div></div>
+  </div>
+  <div class="tabs" style="margin-top:18px">
+    <button class="tab active" data-action="studio-tab" data-tab="lessons">${t("nav.lessons")} <span class="mono muted small">${lessons.length}</span></button>
+    <button class="tab" data-action="studio-tab" data-tab="quizzes">${t("quiz.new").replace("New ", "")} <span class="mono muted small">${quizzes.length}</span></button>
+  </div><div id="studio-tab"></div>`;
+  setView(html, "studio");
+  renderStudioTab(document.getElementById("studio-tab"), "lessons");
+});
+
+function renderStudioTab(root, which) {
+  if (which === "lessons") {
+    const lessons = [...db.lessons].sort((a, b) => b.createdAt - a.createdAt);
+    let html = `<button class="btn primary" data-action="studio-new-lesson">${icon("plus")}${t("lesson.new")}</button>`;
+    if (!lessons.length) {
+      html += `<div class="card section">${emptyState("book", "empty.noLessons", esc("Pick a structure template and adjust the stages to your class."))}</div>`;
+    } else {
+      html += `<div class="card section">`;
+      for (const l of lessons) {
+        const c = cls(l.classId);
+        const statusTone = { draft: "mut", ready: "green", taught: "slate", cancelled: "red" }[l.status] || "mut";
+        html += `<div style="display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--line)">
+          <span class="chip ${statusTone}">${t("lesson." + l.status)}</span>
+          <div style="flex:1;min-width:0"><b>${esc(l.title)}</b> <span class="muted small">· ${esc(c ? c.name : "")}</span>
+            <div class="meta">${l.objective ? esc(l.objective) : ""}</div></div>
+          <span class="mono small muted">${SorndiCore.planTotalMinutes(l.stages)} min</span>
+          <button class="btn sm ghost" data-action="studio-edit-lesson" data-id="${l.id}">${icon("edit")}${t("act.edit")}</button>
+          <button class="iconbtn" data-action="del-lesson" data-id="${l.id}">${icon("trash")}</button>
+        </div>`;
+      }
+      html += `</div>`;
+    }
+    root.innerHTML = html;
+  } else {
+    const quizzes = [...db.quizzes].sort((a, b) => b.createdAt - a.createdAt);
+    let html = `<button class="btn primary" data-action="new-quiz">${icon("plus")}${t("quiz.new")}</button>`;
+    if (!quizzes.length) {
+      html += `<div class="card section">${emptyState("quiz", "empty.noQuizzes", esc("Multiple choice, 4 options, with explanations. Runs on the projector or on one shared device."))}</div>`;
+    } else {
+      html += `<div class="card section">`;
+      for (const q of quizzes) {
+        const c = cls(q.classId);
+        html += `<div style="display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--line)">
+          <div style="flex:1;min-width:0"><b>${esc(q.title)}</b> <span class="muted small">· ${esc(c ? c.name : "")}</span>
+            <div class="meta mono">${q.questions.length} ${t("quiz.question")} · ${q.seconds || 30}s</div></div>
+          <button class="btn sm" data-action="run-quiz" data-id="${q.id}">${icon("play")}${t("quiz.run")}</button>
+          <button class="btn sm ghost" data-action="edit-quiz" data-id="${q.id}">${icon("edit")}${t("act.edit")}</button>
+          <button class="iconbtn" data-action="del-quiz" data-id="${q.id}">${icon("trash")}</button>
+        </div>`;
+      }
+      html += `</div>`;
+    }
+    root.innerHTML = html;
+  }
+}
+
+function studioLessonDialog(existing) {
+  const classOpts = db.classes.filter(c => !c.archived).map(c => `<option value="${c.id}" ${existing && existing.classId === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("");
+  if (!db.classes.length) { toast(t("classes.empty") + " — " + t("classes.new"), true); return; }
+  openDialog(existing ? t("act.edit") : t("lesson.new"), `
+    <div class="row">
+      <label class="field"><span>${t("nav.classes")} *</span><select class="input" id="slf-class">${classOpts}</select></label>
+      <label class="field" style="flex:2"><span>Lesson title *</span><input class="input" id="slf-title" value="${escAttr(existing ? existing.title : "")}"></label>
+    </div>
+    <label class="field"><span>${t("lesson.objective")} *</span><input class="input" id="slf-objective" value="${escAttr(existing ? existing.objective : "")}" placeholder="Students can…"></label>
+    <div class="row">
+      <label class="field"><span>${t("lesson.planned")}</span><input class="input" type="date" id="slf-date" value="${escAttr(existing ? existing.plannedDate || "" : "")}"></label>
+      <label class="field"><span>${t("lesson.status")}</span>
+        <select class="input" id="slf-status">${["draft", "ready", "taught", "cancelled"].map(s => `<option value="${s}" ${existing && existing.status === s ? "selected" : ""}>${t("lesson." + s)}</option>`).join("")}</select></label>
+    </div>
+    <label class="field"><span>${t("lesson.template")}</span>
+      <select class="input" id="slf-template">
+        <option value="">—</option>
+        ${SorndiCore.LESSON_TEMPLATES.map(tp => `<option value="${tp.id}" ${existing && existing.template === tp.id ? "selected" : ""}>${tp.stages.map(s => s.name).join(" · ")}</option>`).join("")}
+      </select></label>
+    <div id="slf-stages"></div>
+  `, `<button class="btn primary" id="slf-save">${t("act.save")}</button>`, { wide: true });
+  const ov = document.getElementById("overlay");
+  function stageRow(s) {
+    const div = eld_from(`<div class="row" style="align-items:center;margin-bottom:6px">
+      <input class="input sg-name" style="flex:2" value="${escAttr(s.name || "")}">
+      <input class="input sg-min" style="flex:0 0 76px" type="number" min="0" value="${escAttr(s.minutes ?? "")}">
+      <span class="meta">min</span>
+      <button class="iconbtn sg-del">${icon("x")}</button></div>`);
+    div.querySelector(".sg-del").addEventListener("click", () => { div.remove(); updateTotal(); });
+    return div;
+  }
+  function readStages() {
+    return [...ov.querySelectorAll("#slf-stages .row")].map(r => ({
+      name: r.querySelector(".sg-name").value.trim(),
+      minutes: parseInt(r.querySelector(".sg-min").value, 10) || 0,
+    })).filter(s => s.name);
+  }
+  function updateTotal() {
+    const box = ov.querySelector("#slf-total");
+    if (box) box.innerHTML = `<span class="mono">${SorndiCore.planTotalMinutes(readStages())}</span> min`;
+  }
+  function renderStages(stages) {
+    const box = ov.querySelector("#slf-stages");
+    box.innerHTML = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <b class="small">${esc(t("lesson.stages"))}</b><span class="meta" id="slf-total"></span></div>`;
+    for (const s of stages) box.appendChild(stageRow(s));
+    box.insertAdjacentHTML("beforeend", `<button class="btn sm" id="sg-add">${icon("plus")}${t("act.add")}</button>`);
+    box.querySelector("#sg-add").addEventListener("click", () => { box.querySelector("#sg-add").before(stageRow({})); updateTotal(); });
+    box.addEventListener("input", updateTotal);
+    updateTotal();
+  }
+  if (existing && existing.stages) renderStages(existing.stages); else renderStages([]);
+  ov.querySelector("#slf-template").addEventListener("change", e => {
+    const stages = SorndiCore.templateStages(e.target.value);
+    if (stages) renderStages(stages);
+  });
+  ov.querySelector("#slf-save").addEventListener("click", () => {
+    const title = ov.querySelector("#slf-title").value.trim();
+    if (!title) { ov.querySelector("#slf-title").focus(); return; }
+    const data = {
+      classId: ov.querySelector("#slf-class").value,
+      title,
+      objective: ov.querySelector("#slf-objective").value.trim(),
+      plannedDate: ov.querySelector("#slf-date").value || null,
+      status: ov.querySelector("#slf-status").value,
+      template: ov.querySelector("#slf-template").value || null,
+      stages: readStages(),
+    };
+    if (existing) Object.assign(existing, data);
+    else db.lessons.push({ id: uid(), createdAt: Date.now(), ...data });
+    save(); closeDialog(); renderRoute();
+  });
+}
+
+/* ---------------------------------------------------------------- Quiz editor */
+function quizDialog(existing) {
+  if (!db.classes.length) { toast(t("classes.empty"), true); return; }
+  const classOpts = db.classes.filter(c => !c.archived).map(c => `<option value="${c.id}" ${existing && existing.classId === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("");
+  openDialog(existing ? t("act.edit") : t("quiz.new"), `
+    <div class="row">
+      <label class="field"><span>${t("nav.classes")}</span><select class="input" id="qf-class">${classOpts}</select></label>
+      <label class="field" style="flex:2"><span>Quiz title *</span><input class="input" id="qf-title" value="${escAttr(existing ? existing.title : "")}"></label>
+    </div>
+    <label class="field"><span>${t("lesson.objective")}</span><input class="input" id="qf-objective" value="${escAttr(existing ? existing.objective || "" : "")}"></label>
+    <div class="row">
+      <label class="field"><span>${t("tools.timer")} (s/question)</span><input class="input" type="number" id="qf-seconds" value="${existing ? existing.seconds || 30 : 30}" min="5" max="300"></label>
+    </div>
+    <div id="qf-questions"></div>
+    <button class="btn sm" id="qf-add">${icon("plus")}${t("quiz.question")}</button>
+  `, `<button class="btn primary" id="qf-save">${t("act.save")}</button>`, { wide: true });
+  const ov = document.getElementById("overlay");
+  const box = ov.querySelector("#qf-questions");
+
+  function qCard(q, i) {
+    const div = eld_from(`<div class="card" style="padding:14px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <b class="mono muted">Q${i + 1}</b><span style="flex:1"></span>
+        <button class="iconbtn qf-del" aria-label="${t("act.remove")}">${icon("trash")}</button></div>
+      <input class="input qf-prompt" placeholder="${esc(t("quiz.prompt"))}" value="${escAttr(q.prompt || "")}">
+      <div style="height:8px"></div>
+      ${[0, 1, 2, 3].map(o => `<div class="row" style="margin-bottom:6px;align-items:center">
+        <label class="check" style="flex:0 0 auto"><input type="radio" class="qf-correct" name="qc-${Date.now()}-${i}" ${q.correct === o ? "checked" : ""}></label>
+        <input class="input qf-opt" data-o="${o}" value="${escAttr(q.options && q.options[o] || "")}" placeholder="${esc(t("quiz.option"))} ${o + 1}">
+      </div>`).join("")}
+      <input class="input qf-explain" placeholder="${esc(t("quiz.explain"))}" value="${escAttr(q.explanation || "")}">
+    </div>`);
+    div.querySelector(".qf-del").addEventListener("click", () => { div.remove(); renumber(); });
+    return div;
+  }
+  function renumber() {
+    [...box.children].forEach((d, i) => d.querySelector(".mono").textContent = "Q" + (i + 1));
+  }
+  function addQ(q) { box.appendChild(qCard(q || {}, box.children.length)); renumber(); }
+  ov.querySelector("#qf-add").addEventListener("click", () => addQ());
+
+  if (existing) { for (const q of existing.questions) addQ(q); } else { addQ(); addQ(); }
+
+  ov.querySelector("#qf-save").addEventListener("click", () => {
+    const title = ov.querySelector("#qf-title").value.trim();
+    if (!title) { ov.querySelector("#qf-title").focus(); return; }
+    const questions = [...box.children].map(d => ({
+      prompt: d.querySelector(".qf-prompt").value.trim(),
+      options: [...d.querySelectorAll(".qf-opt")].map(o => o.value.trim()),
+      correct: [...d.querySelectorAll(".qf-correct")].findIndex(r => r.checked),
+      explanation: d.querySelector(".qf-explain").value.trim(),
+    })).filter(q => q.prompt && q.options.filter(Boolean).length >= 2);
+    if (!questions.length) { toast("Add at least one question with two options", true); return; }
+    const data = {
+      classId: ov.querySelector("#qf-class").value,
+      title,
+      objective: ov.querySelector("#qf-objective").value.trim(),
+      seconds: Math.max(5, Number(ov.querySelector("#qf-seconds").value) || 30),
+      questions,
+    };
+    if (existing) Object.assign(existing, data);
+    else db.quizzes.push({ id: uid(), createdAt: Date.now(), ...data });
+    save(); closeDialog(); renderRoute();
+  });
+}
+
+/* ---------------------------------------------------------------- Quiz runner */
+let runner = null;
+
+route(/^\/run\/([a-z0-9]+)$/, (quizId) => {
+  const q = quiz(quizId);
+  if (!q) { location.hash = "#/studio"; return; }
+  runner = { quiz: q, mode: null, idx: 0, tallies: q.questions.map(() => [0, 0, 0, 0]), teams: null, teamIdx: 0, revealed: false, timer: null, timeLeft: 0, startedAt: Date.now(), sessionId: null };
+  const sessions = classSessions(q.classId);
+  setView(`
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="iconbtn" data-go="#/studio" aria-label="${t("act.back")}">${icon("chevR").replace('class=""', 'style="transform:rotate(180deg)"')}</button>
+      <div class="page-title">${esc(q.title)}</div>
+    </div>
+    <p class="page-sub">${esc(t("quiz.modeNote"))}</p>
+    ${sessions.length ? `<label class="field" style="max-width:420px;margin-top:12px"><span>${t("att.session")} — ${esc(t("quiz.saveRun"))}</span>
+      <select class="input" id="run-session"><option value="">—</option>${sessions.map(s => {
+        const l = s.lessonId ? lesson(s.lessonId) : null;
+        return `<option value="${s.id}">${esc(fmtDateISO(s.date))} · ${esc(l ? l.title : t("att.session"))}</option>`;
+      }).join("")}</select></label>` : ""}
+    <div class="grid-2 section" style="max-width:760px">
+      <div class="card pad" style="cursor:pointer" data-action="run-mode" data-mode="projector">
+        <h3 style="font-size:16px;margin-bottom:6px">${icon("printer")} ${t("quiz.projector")}</h3>
+        <p class="small muted">${t("quiz.tapTally")}. ${esc("No student devices needed.")}</p>
+      </div>
+      <div class="card pad" style="cursor:pointer" data-action="run-mode" data-mode="shared">
+        <h3 style="font-size:16px;margin-bottom:6px">${icon("users")} ${t("quiz.shared")}</h3>
+        <p class="small muted">${esc("Teams answer in turn on this device or tablet.")}</p>
+      </div>
+    </div>`, "studio");
+});
+
+function runnerShell(inner) {
+  const q = runner.quiz;
+  return `<div class="quiz-stage">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+      <button class="iconbtn" data-action="run-exit" aria-label="${t("act.close")}">${icon("x")}</button>
+      <div class="mono muted">Q${runner.idx + 1}/${q.questions.length}</div>
+      <div class="timer-bar" style="flex:1"><div id="timer-fill" style="width:100%"></div></div>
+      <button class="btn sm" data-action="run-mode-switch">${runner.mode === "projector" ? t("quiz.shared") : t("quiz.projector")}</button>
+    </div>
+    ${inner}
+  </div>`;
+}
+
+function renderQuestion() {
+  const q = runner.quiz;
+  const qq = q.questions[runner.idx];
+  const main = document.getElementById("view");
+  if (runner.mode === "projector") {
+    main.innerHTML = `<div class="view">${runnerShell(`
+      <div class="quiz-q serif">${esc(qq.prompt)}</div>
+      <div class="quiz-opts">
+        ${qq.options.map((o, oi) => o ? `<button class="quiz-opt ${runner.revealed && oi === qq.correct ? "correct" : ""}" data-tally="${oi}">
+          <span class="key">${"ABCD"[oi]}</span><span>${esc(o)}</span>
+          ${runner.revealed ? `<span class="tally mono">${runner.tallies[runner.idx][oi]}</span>` : `<span class="tally mono muted">${runner.tallies[runner.idx][oi] || ""}</span>`}
+        </button>` : "").join("")}
+      </div>
+      ${runner.revealed ? `<div class="card pad" style="margin-top:18px"><b>${esc(qq.options[qq.correct] || "")}</b><p class="small muted" style="margin-top:4px">${esc(qq.explanation || "")}</p></div>
+        <div style="display:flex;gap:8px;margin-top:16px">
+          <button class="btn primary" data-action="run-next">${runner.idx + 1 < q.questions.length ? t("quiz.next") : t("quiz.finish")}${icon("arrowR")}</button>
+        </div>` : `<div style="display:flex;gap:8px;margin-top:22px">
+        <button class="btn primary" data-action="run-reveal">${icon("check")}${t("quiz.reveal")}</button>
+        <span class="meta" style="align-self:center">${esc(t("quiz.tapTally"))}</span></div>`}
+    `)}</div>`;
+  } else {
+    // shared device: teams answer in turn
+    const teams = runner.teams;
+    main.innerHTML = `<div class="view">${runnerShell(`
+      <div class="quiz-q serif">${esc(qq.prompt)}</div>
+      <div class="meta" style="margin-top:8px">${esc(teams[runner.teamIdx].name)}</div>
+      <div class="quiz-opts">
+        ${qq.options.map((o, oi) => o ? `<button class="quiz-opt ${runner.revealed && oi === qq.correct ? "correct" : ""}" data-answer="${oi}">
+          <span class="key">${"ABCD"[oi]}</span><span>${esc(o)}</span>
+        </button>` : "").join("")}
+      </div>
+      ${runner.revealed ? `<div class="card pad" style="margin-top:18px"><b>${esc(qq.options[qq.correct] || "")}</b><p class="small muted" style="margin-top:4px">${esc(qq.explanation || "")}</p></div>
+        <div style="display:flex;gap:8px;margin-top:16px">
+          <button class="btn primary" data-action="run-next">${runner.idx + 1 < q.questions.length ? t("quiz.next") : t("quiz.finish")}${icon("arrowR")}</button>
+        </div>` : `<div class="meta" style="margin-top:18px">${esc("The team taps its answer, then pass the device on.")}</div>`}
+    `)}</div>`;
+  }
+  startTimer();
+}
+
+function startTimer() {
+  stopTimer();
+  const q = runner.quiz;
+  const qq = q.questions[runner.idx];
+  if (!qq || runner.revealed) { updateTimerBar(0); return; }
+  runner.timeLeft = q.seconds || 30;
+  updateTimerBar(1);
+  runner.timer = setInterval(() => {
+    runner.timeLeft--;
+    updateTimerBar(runner.timeLeft / (q.seconds || 30));
+    if (runner.timeLeft <= 0) { stopTimer(); if (runner.mode === "projector") doReveal(); }
+  }, 1000);
+}
+function stopTimer() { if (runner && runner.timer) { clearInterval(runner.timer); runner.timer = null; } }
+function updateTimerBar(frac) {
+  const fill = document.getElementById("timer-fill");
+  if (fill) fill.style.width = Math.max(0, Math.min(1, frac)) * 100 + "%";
+}
+function doReveal() {
+  if (!runner) return;
+  runner.revealed = true;
+  stopTimer();
+  renderQuestion();
+}
+
+function finishRun() {
+  stopTimer();
+  const q = runner.quiz;
+  const results = q.questions.map((qq, i) => {
+    const tally = runner.tallies[i];
+    const totalAnswers = tally.reduce((s, n) => s + n, 0);
+    return { prompt: qq.prompt, correct: qq.correct, options: qq.options, tally, totalAnswers, correctPct: totalAnswers ? Math.round((tally[qq.correct] || 0) / totalAnswers * 100) : null };
+  });
+  if (runner.mode === "shared" && runner.teams) {
+    openDialog(t("quiz.results"), `
+      <div class="card"><table class="table"><thead><tr><th>#</th><th>${t("tools.teams")}</th><th style="text-align:right">${t("quiz.correct")}</th></tr></thead><tbody>
+      ${runner.teams.map((tm, i) => `<tr><td class="mono">${i + 1}</td><td>${esc(tm.name)}</td><td class="mono" style="text-align:right">${tm.score}/${tm.answered || 0}</td></tr>`).join("")}
+      </tbody></table></div>`, `<button class="btn primary" id="qr-save">${t("quiz.saveRun")}</button>`);
+  } else {
+    openDialog(t("quiz.results"), `
+      ${results.map((r, i) => `<div style="margin-bottom:14px">
+        <div class="small" style="margin-bottom:4px"><b class="mono">Q${i + 1}</b> ${esc(r.prompt)}</div>
+        ${r.totalAnswers ? `<div class="timer-bar" style="height:10px"><div style="width:${r.correctPct}%;background:${r.correctPct >= 60 ? "var(--accent)" : "var(--amber)"}"></div></div>
+        <div class="meta mono">${r.correctPct}% ${t("quiz.correct")} · ${r.totalAnswers} answers</div>`
+        : `<div class="meta">—</div>`}
+      </div>`).join("")}
+    `, `<button class="btn primary" id="qr-save">${t("quiz.saveRun")}</button>`, { wide: true });
+  }
+  document.getElementById("qr-save").addEventListener("click", () => {
+    const sel = document.getElementById("run-session");
+    db.quizRuns.push({
+      id: uid(), quizId: q.id, sessionId: sel ? (sel.value || null) : null,
+      date: SorndiCore.todayISO(), mode: runner.mode,
+      results, teams: runner.mode === "shared" ? runner.teams : null,
+      createdAt: Date.now(),
+    });
+    save(); closeDialog(); runner = null;
+    location.hash = "#/studio";
+    toast(t("saved"));
+  });
+}
+
+/* ---------------------------------------------------------------- Tools */
+route(/^\/tools$/, () => {
+  setView(`
+    <div class="page-title">${t("nav.tools")}</div>
+    <div class="grid-3 section">
+      <div class="card pad" id="tool-pick">
+        <h3 style="font-size:15px;margin-bottom:4px">${icon("user")} ${t("tools.pick")}</h3>
+        <p class="small muted" style="margin-bottom:12px">${t("tools.pickDesc")}</p>
+        <select class="input" id="pick-class">${classOptions()}</select>
+        <div class="pick-name serif" id="pick-name">—</div>
+        <div class="meta" id="pick-left" style="text-align:center;margin-bottom:12px"></div>
+        <div style="display:flex;gap:8px;justify-content:center">
+          <button class="btn primary" data-action="tool-pick">${t("tools.pickOne")}</button>
+          <button class="btn ghost" data-action="tool-pick-reset">${t("tools.reset")}</button>
+        </div>
+      </div>
+      <div class="card pad" id="tool-teams">
+        <h3 style="font-size:15px;margin-bottom:4px">${icon("users")} ${t("tools.teams")}</h3>
+        <p class="small muted" style="margin-bottom:12px">${t("tools.teamsDesc")}</p>
+        <select class="input" id="teams-class">${classOptions()}</select>
+        <div class="row" style="margin-top:8px">
+          <label class="field" style="margin-bottom:0"><span>${t("tools.teamCount")}</span><input class="input" type="number" id="teams-n" value="4" min="2" max="12"></label>
+          <div style="align-self:flex-end;padding-bottom:14px"><button class="btn primary" data-action="tool-teams">${t("tools.start")}</button></div>
+        </div>
+        <div id="teams-out" class="small"></div>
+      </div>
+      <div class="card pad" id="tool-timer">
+        <h3 style="font-size:15px;margin-bottom:4px">${icon("timer")} ${t("tools.timer")}</h3>
+        <p class="small muted" style="margin-bottom:12px">${t("tools.timerDesc")}</p>
+        <div class="row" style="align-items:flex-end">
+          <label class="field"><span>${t("tools.minutes")}</span><input class="input" type="number" id="timer-min" value="5" min="1" max="120"></label>
+          <button class="btn primary" data-action="timer-start" style="margin-bottom:14px">${t("tools.start")}</button>
+        </div>
+        <div class="big-count" id="timer-display">00:00</div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn sm" data-action="timer-pause" id="timer-pausebtn">${t("tools.pause")}</button>
+          <button class="btn sm ghost" data-action="timer-reset">${t("tools.reset")}</button>
+        </div>
+      </div>
+    </div>`, "tools");
+  updatePickLeft();
+});
+
+function classOptions() {
+  return db.classes.filter(c => !c.archived).map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join("");
+}
+
+let pickState = {};
+let teamsState = null;
+let timerState = null;
+
+function updatePickLeft() {
+  const sel = document.getElementById("pick-class");
+  const left = document.getElementById("pick-left");
+  if (!sel || !left) return;
+  const st = pickState[sel.value] || [];
+  const total = classStudents(sel.value).length;
+  left.textContent = total ? `${st.length}/${total} ${t("tools.picked")}` : "";
+}
+
+/* ================================================================ SORNDI views 4
+   Exports, Settings, print report, demo data, global action dispatch, init. */
+
+/* ---------------------------------------------------------------- Exports */
+route(/^\/exports$/, () => {
+  const runs = [...db.quizRuns].sort((a, b) => b.createdAt - a.createdAt);
+  setView(`
+    <div class="page-title">${t("exports.title")}</div>
+    <p class="page-sub">${t("exports.hint")}</p>
+    <div class="card pad section" style="max-width:640px">
+      <label class="field"><span>${t("nav.classes")}</span>
+        <select class="input" id="ex-class">${classOptions()}</select></label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" data-action="ex-attendance">${icon("exports")}${t("exports.attendance")}</button>
+        <button class="btn" data-action="ex-scorebook">${icon("exports")}${t("exports.scorebook")}</button>
+        <button class="btn" data-action="ex-log">${icon("file")}${t("exports.log")}</button>
+        <button class="btn" data-action="ex-report">${icon("printer")}${t("exports.report")}</button>
+      </div>
+    </div>
+    <div class="section">${sectionHead("quiz.results", runs.length || undefined)}
+      <div class="card">
+      ${runs.length ? runs.map(r => {
+        const q = quiz(r.quizId);
+        return `<div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line)">
+          <div style="flex:1"><b>${esc(q ? q.title : "?")}</b>
+            <div class="meta mono">${esc(fmtDateISO(r.date))} · ${r.mode === "projector" ? t("quiz.projector") : t("quiz.shared")}${r.sessionId ? " · " + esc(t("att.session")) : ""}</div></div>
+          <button class="btn sm" data-action="ex-quizrun" data-id="${r.id}">${icon("exports")}CSV</button>
+        </div>`;
+      }).join("") : `<div class="empty" style="padding:24px"><div class="small">${t("exports.quizzesNone")}</div></div>`}
+      </div>
+    </div>
+    <div class="card pad section" style="max-width:640px">
+      <b>${t("exports.backup")}</b>
+      <p class="small muted" style="margin:6px 0 12px">${t("set.dataNote")}</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn primary" data-action="ex-backup">${icon("exports")}${t("exports.backup")}</button>
+        <button class="btn" data-action="ex-restore">${icon("upload")}${t("exports.restore")}</button>
+        <button class="btn danger" data-action="ex-wipe">${icon("trash")}${t("exports.wipe")}</button>
+      </div>
+      <input type="file" id="restore-file" accept="application/json" style="display:none">
+    </div>`, "exports");
+});
+
+function exportClassId() {
+  const sel = document.getElementById("ex-class");
+  return sel ? sel.value : (db.classes[0] && db.classes[0].id);
+}
+
+function exportAttendanceCSV(classId) {
+  const c = cls(classId); if (!c) return;
+  const students = classStudents(classId, false);
+  const sessions = [...classSessions(classId)].sort((a, b) => a.date.localeCompare(b.date));
+  const rows = [];
+  for (const s of sessions) {
+    const att = sessionAttendance(s.id);
+    for (const st of students) {
+      const r = att[st.id];
+      rows.push([s.date, s.startTime || "", c.name, (s.lessonId && lesson(s.lessonId)) ? lesson(s.lessonId).title : "", st.studentNumber, st.fullName, r ? r.status : "not_recorded", r ? r.note || "" : ""]);
+    }
+  }
+  downloadFile(`sorndi-attendance-${slug(c.name)}.csv`,
+    SorndiCore.toCSV(["date", "time", "class", "lesson", "student_number", "student", "status", "note"], rows));
+  toast(t("exported"));
+}
+
+function exportScorebookCSV(classId) {
+  const c = cls(classId); if (!c) return;
+  const students = classStudents(classId, false);
+  const assessments = classAssessments(classId);
+  const headers = ["student_number", "student", ...assessments.flatMap(a => [`${a.name} (${a.maxScore},w${a.weight})`, "state"]), "weighted_total"];
+  const rows = students.map(st => {
+    const wt = SorndiCore.weightedTotal(assessments, st.id, getScore);
+    const cells = [];
+    for (const a of assessments) {
+      const v = getScore(a.id, st.id);
+      cells.push(typeof v === "number" ? v : "");
+      cells.push(typeof v === "number" ? "scored" : v || "");
+    }
+    return [st.studentNumber, st.fullName, ...cells, wt.total === null ? "" : Math.round(wt.total * 10) / 10];
+  });
+  downloadFile(`sorndi-scorebook-${slug(c.name)}.csv`, SorndiCore.toCSV(headers, rows));
+  toast(t("exported"));
+}
+
+function exportDailyLogMD(classId) {
+  const c = cls(classId); if (!c) return;
+  const sessions = [...classSessions(classId)].sort((a, b) => a.date.localeCompare(b.date));
+  let md = `# ${c.name} — ${t("today.sessions")}\n\n`;
+  for (const s of sessions) {
+    const l = s.lessonId ? lesson(s.lessonId) : null;
+    const att = sessionAttendance(s.id);
+    const counts = SorndiCore.attendanceSummary(classStudents(classId, false).map(st => att[st.id]));
+    md += `## ${s.date}${s.startTime ? " " + s.startTime : ""}\n\n`;
+    if (l) md += `**${l.title}**\n\n${l.objective ? l.objective + "\n\n" : ""}`;
+    md += `- ${t("nav.attendance")}: ${["present", "late", "absent_excused", "absent_unexcused", "sick", "left_early", "remote", "other", "not_recorded"]
+      .map(k => `${k} ${counts[k] || 0}`).join(", ")}\n`;
+    if (s.reflection) md += `- ${t("today.missingReflection").replace("missing", "")}: ${s.reflection}\n`;
+    if (s.nextAction) md += `- Next: ${s.nextAction}\n`;
+    md += "\n";
+  }
+  downloadFile(`sorndi-log-${slug(c.name)}.md`, md);
+  toast(t("exported"));
+}
+
+function exportQuizRunCSV(runId) {
+  const r = byId(db.quizRuns, runId); if (!r) return;
+  const q = quiz(r.quizId);
+  const rows = r.results.map((res, i) => [i + 1, res.prompt, res.options[res.correct] || "", res.totalAnswers, res.correctPct ?? "", ...(res.tally || [])]);
+  downloadFile(`sorndi-quiz-${slug(q ? q.title : "run")}-${r.date}.csv`,
+    SorndiCore.toCSV(["q", "prompt", "correct_answer", "answers", "correct_pct", "A", "B", "C", "D"], rows));
+  toast(t("exported"));
+}
+
+function slug(s) {
+  return String(s || "").toLowerCase().replace(/[^a-z0-9\u0E00-\u0E7F]+/gi, "-").replace(/^-+|-+$/g, "") || "class";
+}
+
+function printReport(classId) {
+  location.hash = `#/print/${classId}`;
+}
+
+route(/^\/print\/([a-z0-9]+)$/, (classId) => {
+  const c = cls(classId);
+  if (!c) { location.hash = "#/classes"; return; }
+  const students = classStudents(classId, false);
+  const assessments = classAssessments(classId);
+  const sessions = [...classSessions(classId)].sort((a, b) => a.date.localeCompare(b.date));
+  const rows = students.map(st => {
+    const wt = SorndiCore.weightedTotal(assessments, st.id, getScore);
+    return `<tr><td>${esc(st.studentNumber)}</td><td>${esc(st.fullName)}</td>
+      ${assessments.map(a => { const v = getScore(a.id, st.id); return `<td style="text-align:center">${typeof v === "number" ? v : (v === "excused" ? "E" : v === "missing" ? "M" : "")}</td>`; }).join("")}
+      <td style="text-align:center"><b>${wt.total === null ? "" : Math.round(wt.total) + "%"}</b></td></tr>`;
+  }).join("");
+  let attRows = "";
+  for (const s of sessions.slice(0, 40)) {
+    const att = sessionAttendance(s.id);
+    const counts = SorndiCore.attendanceSummary(students.map(st => att[st.id]));
+    const l = s.lessonId ? lesson(s.lessonId) : null;
+    attRows += `<tr><td>${esc(s.date)}</td><td>${esc(l ? l.title : "")}</td>
+      <td style="text-align:center">${counts.present}</td><td style="text-align:center">${counts.late}</td>
+      <td style="text-align:center">${counts.absent_excused}</td><td style="text-align:center">${counts.absent_unexcused}</td>
+      <td style="text-align:center">${counts.sick}</td><td style="text-align:center">${counts.not_recorded}</td></tr>`;
+  }
+  setView(`
+    <div style="max-width:900px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:10px" class="no-print">
+        <button class="iconbtn" data-go="#/class/${c.id}" aria-label="${t("act.back")}">${icon("chevR").replace('class=""', 'style="transform:rotate(180deg)"')}</button>
+        <b>${t("exports.report")}</b><span style="flex:1"></span>
+        <button class="btn primary" onclick="window.print()">${icon("printer")}Print / PDF</button>
+      </div>
+      <div class="card pad" style="margin-top:16px">
+        <div style="display:flex;align-items:center;gap:12px">
+          ${markSVG("", "var(--ink)")}
+          <div><div style="font-weight:600;font-size:16px">${esc(c.name)}</div>
+          <div class="meta">${esc([c.subject, c.gradeLevel, c.room, c.term].filter(Boolean).join(" · "))} · ${esc(fmtDateISO(SorndiCore.todayISO(), { long: true }))}</div></div>
+        </div>
+        <h3 style="margin:22px 0 8px;font-size:14px">${t("nav.scorebook")}</h3>
+        <table class="table"><thead><tr><th>${t("roster.number")}</th><th>${t("roster.name")}</th>
+          ${assessments.map(a => `<th style="text-align:center">${esc(a.name)}<br><span class="mono">/${a.maxScore} w${a.weight}</span></th>`).join("")}
+          <th>${t("score.total")}</th></tr></thead><tbody>${rows}</tbody></table>
+        <p class="meta">total = Σ(pct × weight) / Σ(weight) · M = ${t("score.missing")} · E = ${t("score.excused")}</p>
+        <h3 style="margin:22px 0 8px;font-size:14px">${t("nav.attendance")}</h3>
+        <table class="table"><thead><tr><th>${t("att.date")}</th><th>${t("nav.lessons")}</th>
+          <th>${t("st.present")}</th><th>${t("st.late")}</th><th>${t("st.absentExcused")}</th><th>${t("st.absentUnexcused")}</th><th>${t("st.sick")}</th><th>${t("st.notRecorded")}</th>
+        </tr></thead><tbody>${attRows}</tbody></table>
+      </div>
+    </div>`, "exports");
+});
+
+/* ---------------------------------------------------------------- Settings */
+route(/^\/settings$/, () => {
+  setView(`
+    <div class="page-title">${t("nav.settings")}</div>
+    <div class="grid-2 section" style="max-width:860px">
+      <div class="card pad">
+        <h3 style="font-size:15px;margin-bottom:14px">${t("set.teacher")}</h3>
+        <label class="field"><span>${t("set.teacher")}</span><input class="input" id="st-teacher" value="${escAttr(db.settings.teacherName)}"></label>
+        <label class="field"><span>${t("set.school")}</span><input class="input" id="st-school" value="${escAttr(db.settings.school)}"></label>
+        <div class="row">
+          <label class="field"><span>${t("set.lang")}</span>
+            <select class="input" id="st-lang">
+              <option value="en" ${LANG === "en" ? "selected" : ""}>English</option>
+              <option value="th" ${LANG === "th" ? "selected" : ""}>ไทย</option>
+            </select></label>
+          <label class="field"><span>${t("set.theme")}</span>
+            <select class="input" id="st-theme">
+              ${["light", "dark", "system"].map(v => `<option value="${v}" ${db.settings.theme === v ? "selected" : ""}>${t("set." + v)}</option>`).join("")}
+            </select></label>
+        </div>
+        <button class="btn primary" data-action="st-save">${t("act.save")}</button>
+      </div>
+      <div>
+        <div class="card pad">
+          <h3 style="font-size:15px;margin-bottom:10px">${t("set.demo")}</h3>
+          <p class="small muted" style="margin-bottom:12px">${t("set.demoNote")}</p>
+          <button class="btn" data-action="load-demo">${icon("refresh")}${t("set.demo")}</button>
+        </div>
+        <div class="card pad" style="margin-top:16px">
+          <h3 style="font-size:15px;margin-bottom:10px">${t("set.data")}</h3>
+          <p class="small muted" style="margin-bottom:12px">${t("set.dataNote")}</p>
+          <button class="btn" data-action="ex-backup">${icon("exports")}${t("exports.backup")}</button>
+          <button class="btn danger" data-action="ex-wipe">${icon("trash")}${t("exports.wipe")}</button>
+        </div>
+        <div class="card pad" style="margin-top:16px">
+          <h3 style="font-size:15px;margin-bottom:10px">${t("set.shortcuts")}</h3>
+          <div class="small" style="line-height:2.1">
+            <span class="kbd">P</span> ${t("st.present")} · <span class="kbd">L</span> ${t("st.late")} · <span class="kbd">A</span> ${t("st.absentUnexcused")} · <span class="kbd">E</span> ${t("st.absentExcused")} · <span class="kbd">S</span> ${t("st.sick")} · <span class="kbd">R</span> ${t("st.remote")}<br>
+            <span class="kbd">Tab</span> → student row · <span class="kbd">Enter</span> ${t("att.history")} · <span class="kbd">Esc</span> ${t("act.close")}
+          </div>
+        </div>
+        <div class="card pad" style="margin-top:16px">
+          <h3 style="font-size:15px;margin-bottom:10px">${t("set.about")}</h3>
+          <p class="small muted">SornDi v2.0 — ${t("app.tagline")}. สอนดี = teach well.<br>
+          Plan less. Teach better. Share what works.<br>
+          MIT licensed · <a href="https://github.com/Tulip9ZZZA/sorndi" target="_blank" rel="noopener">github.com/Tulip9ZZZA/sorndi</a></p>
+        </div>
+      </div>
+    </div>`, "settings");
+});
+
+/* ---------------------------------------------------------------- demo data */
+function loadDemo() {
+  const d = defaultState();
+  d.settings = { ...db.settings };
+  db = d;
+  const classId = uid();
+  db.classes.push({
+    id: classId, name: "M.2 Science — Room 204", subject: "Science", gradeLevel: "Grade 8 (ม.2)",
+    room: "204", term: "Term 1 / 2569", archived: false, createdAt: Date.now(),
+    timetable: [
+      { day: 1, start: "08:30", end: "09:20" }, { day: 3, start: "10:20", end: "11:10" }, { day: 5, start: "13:00", end: "13:50" },
+    ],
+  });
+  const names = [
+    "Arisa Wongurai", "Chokchai Nuengplub", "Dawid Klin Pakdee", "Fahsai Bunnag", "Kanokwan Sitho",
+    "Napat Chaiyaphon", "Nongnuch Rattanee", "Ploychompoo Nualpaka", "Prasert Onkla", "Primroj Boonmee",
+    "Sarisa Kong-asa", "Teerapat Wongsri", "Thanwa Pumipanth", "Wanida Sukkasem", "Yodchai Kerdvichai",
+  ];
+  names.forEach((n, i) => {
+    db.students.push({ id: uid(), classId, studentNumber: String(i + 1), fullName: n, notes: i === 3 ? "Front row, needs larger print" : "", active: true });
+  });
+  const objId = uid();
+  db.objectives.push({ id: objId, classId, statement: "Explain how energy transforms in a simple circuit" });
+  const stages = SorndiCore.templateStages("worked_example");
+  const lessonId = uid();
+  db.lessons.push({
+    id: lessonId, classId, title: "Energy transfer in circuits", objective: "Explain how energy transforms in a simple circuit",
+    template: "worked_example", stages, plannedDate: SorndiCore.todayISO(), status: "ready", createdAt: Date.now(),
+  });
+  const sessionId = uid();
+  db.sessions.push({ id: sessionId, classId, lessonId, date: SorndiCore.todayISO(), startTime: "08:30", status: "completed", reflection: "Batteries vs bulbs analogy landed; 3 students still confuse current with energy.", nextAction: "Start next lesson with the sorting task.", createdAt: Date.now() });
+  const att = ["present", "present", "present", "present", "present", "late", "present", "present", "present", "present", "sick", "present", "present", "present", "present"];
+  classStudents(classId).forEach((st, i) => {
+    db.attendance.push({ id: uid(), sessionId, studentId: st.id, status: att[i % att.length], note: "", history: [], updatedAt: new Date().toISOString() });
+  });
+  const a1 = uid();
+  db.assessments.push({ id: a1, classId, name: "Circuit quiz", category: "Quiz", date: SorndiCore.todayISO(), maxScore: 10, weight: 2, objectiveId: objId, createdAt: Date.now() });
+  const a2 = uid();
+  db.assessments.push({ id: a2, classId, name: "Lab worksheet", category: "Classwork", date: SorndiCore.todayISO(), maxScore: 20, weight: 1, objectiveId: objId, createdAt: Date.now() });
+  classStudents(classId).forEach((st, i) => {
+    db.scores.push({ assessmentId: a1, studentId: st.id, value: i % 5 === 0 ? "missing" : [6, 7, 8, 9, 10, 5, 7, 8, 6, 9, 10, 4, 7, 8, 6][i % 15] });
+    db.scores.push({ assessmentId: a2, studentId: st.id, value: [14, 18, 12, 20, 16, "excused", 17, 19, 15, 18, 20, 11, 16, 17, 15][i % 15] });
+  });
+  db.quizzes.push({
+    id: uid(), classId, title: "Energy in circuits — exit quiz", objective: "Explain how energy transforms in a simple circuit",
+    seconds: 30, createdAt: Date.now(),
+    questions: [
+      { prompt: "A bulb lights up in a closed circuit. Where does the energy come from?", options: ["The battery", "The wire", "The bulb", "The switch"], correct: 0, explanation: "Chemical energy in the battery is transformed to electrical energy, then to light and heat in the bulb." },
+      { prompt: "What happens if you open the switch?", options: ["The bulb gets brighter", "Current stops and the bulb goes out", "The battery charges", "Nothing changes"], correct: 1, explanation: "An open switch breaks the loop, so no current flows." },
+      { prompt: "Which material conducts electricity?", options: ["Plastic ruler", "Dry wood", "Copper wire", "Rubber band"], correct: 2, explanation: "Metals like copper have free electrons that carry current." },
+    ],
+  });
+  save();
+  location.hash = "#/today";
+  renderRoute();
+  toast(t("demo.loaded"));
+}
+
+function runTimer() {
+  const d = document.getElementById("timer-display");
+  if (!d) return;
+  if (timerState) {
+    if (timerState.running) {
+      timerState.left = Math.max(0, timerState.left - 1);
+      const m = String(Math.floor(timerState.left / 60)).padStart(2, "0");
+      const s = String(timerState.left % 60).padStart(2, "0");
+      d.textContent = `${m}:${s}`;
+      d.style.color = timerState.left === 0 ? "var(--red)" : "";
+      if (timerState.left === 0) { timerState = null; d.textContent = "00:00"; return; }
+    }
+    setTimeout(runTimer, 1000);
+  }
+}
+
+/* ---------------------------------------------------------------- global actions */
+const ACTIONS = {
+  "load-demo": () => loadDemo(),
+  "open-class": el => { location.hash = `#/class/${el.dataset.id}`; },
+  "class-tab": el => { location.hash = `#/class/${el.dataset.id}/${el.dataset.tab}`; },
+  "new-class": () => classDialog(null),
+  "edit-class": el => classDialog(cls(el.dataset.id)),
+  "unarchive-class": el => { const c = cls(el.dataset.id); if (c) c.archived = false; save(); renderRoute(); },
+  "add-student": el => studentDialog(cls(el.dataset.id), null),
+  "import-roster": el => importRosterDialog(cls(el.dataset.id)),
+  "edit-student": el => {
+    const s = byId(db.students, el.dataset.id);
+    if (s) studentDialog(cls(s.classId), s);
+  },
+  "del-student": el => {
+    const s = byId(db.students, el.dataset.id);
+    if (s && confirm(`${t("act.delete")}: ${s.fullName}?`)) { db.students.splice(db.students.indexOf(s), 1); save(); renderRoute(); }
+  },
+  "new-session": el => sessionDialog(cls(el.dataset.id)),
+  "go-att": el => {
+    const s = session(el.dataset.session);
+    if (!s) return;
+    location.hash = `#/class/${s.classId}/attendance`;
+    sessionStorage.setItem("sorndi.session", s.id);
+    setTimeout(() => {
+      const sel = document.getElementById("att-session");
+      if (sel) { sel.value = s.id; sel.dispatchEvent(new Event("change")); }
+    }, 80);
+  },
+  "open-lesson": el => { const l = lesson(el.dataset.id); if (l) lessonDialog(cls(l.classId), l); },
+  "new-lesson": el => lessonDialog(cls(el.dataset.id), null),
+  "edit-lesson": el => { const l = lesson(el.dataset.id); if (l) lessonDialog(cls(l.classId), l); },
+  "del-lesson": el => {
+    const l = lesson(el.dataset.id);
+    if (l && confirm(`${t("act.delete")}: ${l.title}?`)) { db.lessons.splice(db.lessons.indexOf(l), 1); save(); renderRoute(); }
+  },
+  "new-session-for-lesson": el => {
+    const l = lesson(el.dataset.lesson);
+    if (!l) return;
+    const s = { id: uid(), classId: l.classId, lessonId: l.id, date: l.plannedDate || SorndiCore.todayISO(), startTime: "", status: "planned", reflection: "", nextAction: "", createdAt: Date.now() };
+    db.sessions.push(s); save();
+    location.hash = `#/class/${l.classId}/attendance`;
+    sessionStorage.setItem("sorndi.session", s.id);
+    setTimeout(() => {
+      const sel = document.getElementById("att-session");
+      if (sel) { sel.value = s.id; sel.dispatchEvent(new Event("change")); }
+    }, 80);
+  },
+  "mark-all": el => {
+    const sId = el.dataset.session;
+    const s = session(sId);
+    const students = classStudents(s.classId);
+    for (const st of students) addAttendance(sId, st.id, "present");
+    renderRoute();
+    const root2 = document.getElementById("att-area");
+    if (root2) renderAttendanceRows(root2, s ? cls(s.classId) : null, sId);
+  },
+  "new-assessment": el => assessmentDialog(cls(el.dataset.id)),
+  "export-scorebook": el => exportScorebookCSV(el.dataset.id),
+  "new-template": el => templateDialog(cls(el.dataset.id)),
+  "del-template": el => {
+    const tp = byId(db.recordTemplates, el.dataset.id);
+    if (tp && confirm(`${t("act.delete")}: ${tp.name}?`)) { db.recordTemplates.splice(db.recordTemplates.indexOf(tp), 1); save(); renderRoute(); }
+  },
+  "open-record-entry": el => recordEntryDialog(byId(db.recordTemplates, el.dataset.id)),
+  "studio-tab": el => {
+    document.querySelectorAll("[data-action='studio-tab']").forEach(b => b.classList.toggle("active", b === el));
+    renderStudioTab(document.getElementById("studio-tab"), el.dataset.tab);
+  },
+  "studio-new-lesson": () => studioLessonDialog(null),
+  "studio-edit-lesson": el => studioLessonDialog(lesson(el.dataset.id)),
+  "new-quiz": () => quizDialog(null),
+  "edit-quiz": el => quizDialog(quiz(el.dataset.id)),
+  "del-quiz": el => {
+    const q = quiz(el.dataset.id);
+    if (q && confirm(`${t("act.delete")}: ${q.title}?`)) { db.quizzes.splice(db.quizzes.indexOf(q), 1); save(); renderRoute(); }
+  },
+  "run-quiz": el => { location.hash = `#/run/${el.dataset.id}`; },
+  "run-mode": el => {
+    if (!runner) return;
+    runner.mode = el.dataset.mode;
+    if (runner.mode === "shared") {
+      const students = classStudents(runner.quiz.classId);
+      if (!students.length) { toast(t("class.students") + " — 0", true); return; }
+      runner.teams = students.map((s, i) => ({ name: `${t("tools.teams")} ${Math.floor(i / 3) + 1} · ${s.fullName.split(" ")[0]}`, studentId: s.id, score: 0, answered: 0 }));
+      runner.teamIdx = 0;
+    }
+    renderQuestion();
+  },
+  "run-mode-switch": () => {
+    if (!runner) return;
+    const btn = document.querySelector("[data-action='run-mode-switch']");
+    runner.mode = runner.mode === "projector" ? "shared" : "projector";
+    if (runner.mode === "shared" && !runner.teams) {
+      const students = classStudents(runner.quiz.classId);
+      runner.teams = students.map((s, i) => ({ name: `${t("tools.teams")} ${Math.floor(i / 3) + 1} · ${s.fullName.split(" ")[0]}`, studentId: s.id, score: 0, answered: 0 }));
+      runner.teamIdx = 0;
+    }
+    runner.revealed = false;
+    renderQuestion();
+  },
+  "run-reveal": () => doReveal(),
+  "run-next": () => {
+    if (!runner) return;
+    if (runner.idx + 1 < runner.quiz.questions.length) { runner.idx++; runner.revealed = false; renderQuestion(); }
+    else finishRun();
+  },
+  "run-exit": () => { stopTimer(); runner = null; location.hash = "#/studio"; },
+  "tool-pick": () => {
+    const sel = document.getElementById("pick-class");
+    const out = document.getElementById("pick-name");
+    const students = classStudents(sel.value);
+    if (!students.length) { out.textContent = "—"; return; }
+    let picked = pickState[sel.value] || [];
+    if (picked.length >= students.length) picked = [];
+    const remaining = students.filter(s => !picked.includes(s.id));
+    const chosen = remaining[Math.floor(Math.random() * remaining.length)];
+    picked.push(chosen.id);
+    pickState[sel.value] = picked;
+    out.textContent = chosen.fullName;
+    updatePickLeft();
+  },
+  "tool-pick-reset": () => {
+    const sel = document.getElementById("pick-class");
+    pickState[sel.value] = [];
+    document.getElementById("pick-name").textContent = "—";
+    updatePickLeft();
+  },
+  "tool-teams": () => {
+    const sel = document.getElementById("teams-class");
+    const n = Math.max(2, Number(document.getElementById("teams-n").value) || 4);
+    const students = classStudents(sel.value);
+    const shuffled = [...students].sort(() => Math.random() - 0.5);
+    const teams = Array.from({ length: n }, () => []);
+    shuffled.forEach((s, i) => teams[i % n].push(s));
+    teamsState = teams;
+    document.getElementById("teams-out").innerHTML = teams.map((tm, i) =>
+      `<div style="margin-top:10px"><b>${t("tools.teams")} ${i + 1}</b> <span class="meta mono">${tm.length}</span><br>${tm.map(s => esc(s.fullName)).join(", ")}</div>`).join("");
+  },
+  "timer-start": () => {
+    const min = Number(document.getElementById("timer-min").value) || 5;
+    timerState = { total: min * 60, left: min * 60, running: true };
+    document.getElementById("timer-pausebtn").textContent = t("tools.pause");
+    runTimer();
+  },
+  "timer-pause": () => {
+    if (!timerState) return;
+    timerState.running = !timerState.running;
+    document.getElementById("timer-pausebtn").textContent = timerState.running ? t("tools.pause") : t("tools.resume");
+  },
+  "timer-reset": () => {
+    timerState = null;
+    const d = document.getElementById("timer-display");
+    if (d) d.textContent = "00:00";
+  },
+  "st-save": () => {
+    db.settings.teacherName = document.getElementById("st-teacher").value.trim();
+    db.settings.school = document.getElementById("st-school").value.trim();
+    const newLang = document.getElementById("st-lang").value;
+    db.settings.theme = document.getElementById("st-theme").value;
+    save();
+    if (newLang !== LANG) { setLang(newLang); renderShell(); }
+    applyTheme();
+    toast(t("saved"));
+    renderRoute();
+  },
+  "ex-attendance": () => exportAttendanceCSV(exportClassId()),
+  "ex-scorebook": () => exportScorebookCSV(exportClassId()),
+  "ex-log": () => exportDailyLogMD(exportClassId()),
+  "ex-report": () => printReport(exportClassId()),
+  "ex-quizrun": el => exportQuizRunCSV(el.dataset.id),
+  "ex-backup": () => {
+    downloadFile(`sorndi-backup-${SorndiCore.todayISO()}.json`, JSON.stringify(db, null, 2), "application/json");
+    toast(t("exported"));
+  },
+  "ex-restore": () => document.getElementById("restore-file").click(),
+  "ex-wipe": () => {
+    const txt = prompt(t("confirm.wipe"));
+    if (txt && txt.trim().toUpperCase() === "ERASE") {
+      localStorage.removeItem(STORE_KEY);
+      db = defaultState();
+      toast(t("exports.wipe"));
+      location.hash = "#/today";
+      renderRoute();
+    }
+  },
+};
+
+document.addEventListener("click", e => {
+  // actions
+  const act = e.target.closest("[data-action]");
+  if (act && ACTIONS[act.dataset.action]) { e.preventDefault(); ACTIONS[act.dataset.action](act); return; }
+  // quiz tally (projector)
+  const tally = e.target.closest("[data-tally]");
+  if (tally && runner) {
+    const oi = Number(tally.dataset.tally);
+    runner.tallies[runner.idx][oi]++;
+    tally.querySelector(".tally").textContent = runner.tallies[runner.idx][oi];
+    return;
+  }
+  // shared-device answer
+  const ans = e.target.closest("[data-answer]");
+  if (ans && runner && !runner.revealed) {
+    const oi = Number(ans.dataset.answer);
+    const qq = runner.quiz.questions[runner.idx];
+    const team = runner.teams[runner.teamIdx];
+    team.answered = (team.answered || 0) + 1;
+    if (oi === qq.correct) team.score++;
+    runner.tallies[runner.idx][oi]++;
+    runner.teamIdx = (runner.teamIdx + 1) % runner.teams.length;
+    doReveal();
+    return;
+  }
+  // attendance status
+  const stBtn = e.target.closest("[data-att]");
+  if (stBtn) {
+    const statusId = stBtn.dataset.att, studentId = stBtn.dataset.student, sessionId = stBtn.dataset.session;
+    addAttendance(sessionId, studentId, statusId);
+    const row = stBtn.closest("tr");
+    const rec = sessionAttendance(sessionId)[studentId];
+    const st = byId(db.students, studentId);
+    row.outerHTML = attendanceRowHTML(sessionId, st, rec);
+    const root2 = document.getElementById("att-area");
+    if (root2) updateAttendanceCounters(root2, sessionId, clsOfSession(sessionId));
+    return;
+  }
+  // attendance history toggle
+  const hist = e.target.closest("[data-att-history]");
+  if (hist) {
+    const panel = hist.closest("td").querySelector(".att-history");
+    if (panel) panel.style.display = panel.style.display === "none" ? "block" : "none";
+    return;
+  }
+  // scorebook cell handled by input listener in view
+});
+
+function clsOfSession(sessionId) {
+  const s = session(sessionId);
+  return s ? s.classId : null;
+}
+
+/* attendance note input + keyboard shortcuts */
+document.addEventListener("input", e => {
+  const note = e.target.closest("[data-att-note]");
+  if (note) {
+    const sessionId = note.dataset.session, studentId = note.dataset.attNote;
+    addAttendance(sessionId, studentId, (sessionAttendance(sessionId)[studentId] || {}).status || null, note.value);
+    return;
+  }
+});
+document.addEventListener("keydown", e => {
+  const row = e.target.closest && e.target.closest("tr[data-row]");
+  if (!row || e.ctrlKey || e.metaKey || e.altKey) return;
+  const map = { p: "present", l: "late", a: "absent_unexcused", e: "absent_excused", s: "sick", r: "remote" };
+  const k = e.key.toLowerCase();
+  if (map[k]) {
+    const studentId = row.dataset.row;
+    const sessionIdEl = document.querySelector("#att-session");
+    const sessionEl = document.querySelector("[data-att]");
+    const sessionId = sessionEl ? sessionEl.dataset.session : null;
+    if (sessionId) {
+      addAttendance(sessionId, studentId, map[k]);
+      const rec = sessionAttendance(sessionId)[studentId];
+      const st = byId(db.students, studentId);
+      row.outerHTML = attendanceRowHTML(sessionId, st, rec);
+      const root2 = document.getElementById("att-area");
+      if (root2) updateAttendanceCounters(root2, sessionId, clsOfSession(sessionId));
+    }
+  }
+});
+
+/* restore file input */
+document.addEventListener("change", e => {
+  if (e.target && e.target.id === "restore-file" && e.target.files && e.target.files[0]) {
+    const f = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result);
+        if (!parsed || parsed.version !== 2) throw new Error("not a SornDi v2 backup");
+        db = Object.assign(defaultState(), parsed);
+        save(); toast(t("restored")); renderShell(); renderRoute();
+      } catch (err) { toast("Invalid backup file", true); }
+    };
+    reader.readAsText(f);
+    e.target.value = "";
+  }
+});
+
+/* topbar buttons */
+document.getElementById("langbtn").addEventListener("click", () => {
+  setLang(LANG === "en" ? "th" : "en");
+  db.settings.lang = LANG; save();
+  renderShell(); renderRoute();
+});
+document.getElementById("themebtn").addEventListener("click", () => {
+  const cur = document.documentElement.dataset.theme;
+  db.settings.theme = cur === "dark" ? "light" : "dark";
+  save(); applyTheme(); renderShell();
+});
+
+/* keyboard: sessions preselect after route is handled via sessionStorage in go-att */
+
+/* ---------------------------------------------------------------- init */
+load();
+setLang(db.settings.lang);
+applyTheme();
+renderShell();
+renderRoute();
+window.addEventListener("beforeunload", () => { clearTimeout(saveTimer); try { localStorage.setItem(STORE_KEY, JSON.stringify(db)); } catch (e) {} });
+
+</script>
+</body>
+</html>

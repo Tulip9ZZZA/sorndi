@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="SornDi — the local-first teacher OS. Plan lessons, take attendance, run quizzes and export your classroom record. One file, no account, no server.">
+<meta name="theme-color" content="#FAF9F6">
+<title>SornDi — Teacher OS</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%2236%2044%20184%20184%22%3E%3Cpath%20d%3D%22M196%2074%20H104%20A32%2032%200%200%200%20104%20138%20H152%20A32%2032%200%200%201%20152%20202%20H60%22%20fill%3D%22none%22%20stroke%3D%22%231F6E4E%22%20stroke-width%3D%2252%22%2F%3E%3C%2Fsvg%3E">
+<style>
+{{CSS}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar" aria-label="Navigation"></aside>
+  <div class="main">
+    <div class="topbar">
+      <span class="crumb" id="crumb"></span>
+      <span class="spacer"></span>
+      <button class="iconbtn" id="langbtn" aria-label="Switch language"></button>
+      <button class="iconbtn" id="themebtn" aria-label="Toggle theme"></button>
+    </div>
+    <div class="content" id="view"></div>
+  </div>
+</div>
+<div id="toasts" aria-live="polite"></div>
+<script>
+{{CORE}}
+</script>
+<script>
+{{APP}}
+</script>
+</body>
+</html>

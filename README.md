@@ -1,147 +1,147 @@
-# SORNDI
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/hero-dark.svg">
+    <img src="assets/readme/hero-light.svg" alt="SornDi — Plan less. Teach better. A local-first teacher OS that keeps lessons, attendance, quizzes and scores in one connected record." width="100%">
+  </picture>
+  <p>
+    <a href="#-quick-start">Quick start</a> ·
+    <a href="#-what-it-does">Features</a> ·
+    <a href="#-why-it-is-different">Why it is different</a> ·
+    <a href="#-the-math">The math</a> ·
+    <a href="#-roadmap">Roadmap</a>
+  </p>
+  <p>
+    <img alt="License" src="https://img.shields.io/badge/license-MIT-1F6E4E?style=flat-square">
+    <img alt="Version" src="https://img.shields.io/badge/version-2.0.0-1C1915?style=flat-square">
+    <img alt="One file" src="https://img.shields.io/badge/app-one%20HTML%20file-1F6E4E?style=flat-square">
+    <img alt="No account" src="https://img.shields.io/badge/signup-none-1C1915?style=flat-square">
+    <a href="tests/run-tests.mjs"><img alt="Tests" src="https://img.shields.io/badge/tests-node%20--test-1F6E4E?style=flat-square"></a>
+  </p>
+</div>
 
-> **A teacher-owned classroom record that keeps planning, attendance, evidence, and assessment connected.**
+---
 
-SORNDI is an English-first teacher workspace with Thai navigation support. Version One helps a teacher create a classroom, maintain a roster, plan lessons, open teaching sessions, record attendance, capture evidence, score assessments, and export a portable classroom record from one connected desk.
+**SornDi** (from the Thai สอนดี, "teach well") is a classroom workspace that keeps planning, attendance, evidence, games and scores connected to the teaching session — and lets the teacher walk away with every byte of it.
 
-This repository contains the SORNDI web application: a React interface backed by an Express and tRPC server, Manus OAuth, Drizzle ORM, and a MySQL-compatible database.
+It runs entirely in your browser. There is no server, no sign-up, no tracking, and nothing to install: the whole app is one `index.html` file. Your classroom record lives in your browser's local storage, and a full backup is one JSON file you own.
 
-## What Version One does
+| Today | Attendance | Scorebook | Quiz runner |
+| --- | --- | --- | --- |
+| ![Today view](assets/readme/shot-today.png) | ![Attendance](assets/readme/shot-attendance.png) | ![Scorebook](assets/readme/shot-scorebook.png) | ![Quiz runner](assets/readme/shot-quiz.png) |
 
-| Teaching need | Version One capability |
+Dark mode, Thai interface, and a mobile layout for the back of the classroom:
+
+| Dark | Thai (ไทย) | Mobile |
+| --- | --- | --- |
+| ![Dark mode](assets/readme/shot-dark.png) | ![Thai](assets/readme/shot-thai.png) | ![Mobile](assets/readme/shot-mobile.png) |
+
+## 🧭 What it does
+
+| Teaching job | SornDi v2 |
 | --- | --- |
-| Set up a class | Create teacher-owned classrooms with subject, level, room, and visual ledger-tab details. |
-| Maintain a roster | Add active students with teacher-supplied names, student numbers, and optional notes. |
-| Plan instruction | Draft and mark lessons ready, then connect them to teaching sessions. |
-| Record attendance | Save multiple attendance statuses and notes for a selected session, then review the correction trail with actor and timestamp. |
-| Capture evidence | Keep session-level teaching notes and follow-up actions alongside the relevant class record. |
-| Assess learning | Create weighted assessments, enter recorded/missing/excused scores, inspect transparent totals, and see each student’s weighted total in the scorebook. |
-| Take records with you | Export the active classroom’s attendance and first assessment as CSV. |
-| Work bilingually | Use English as the primary product language and switch the navigation and key interface copy to Thai. |
+| Start the day | A **Today** view built from your timetable: sessions to teach, attendance due, reflections missing, next actions. |
+| Set up a class | Classrooms with subject, grade, room, term and a weekly timetable. |
+| Manage the roster | Numbered students, notes, paste-import ("one per line"), archive instead of delete. |
+| Plan a lesson | Objective plus an editable stage sequence generated from five evidence-informed templates, with a duration warning when the plan outgrows the timetable slot. |
+| Take attendance | Eight statuses plus *not recorded*, mark-all-present first, notes, live counts, and a correction history that records who changed what and when. Rows you never touch are never counted as absent. |
+| Score work | Weighted assessments where **missing is not zero and excused is not zero**, per-student weighted totals, and a "show the calculation" panel that prints the arithmetic. |
+| Record the day | Teacher-defined daily record templates (homework, reading log, equipment) with an explicit absence rule you can override. |
+| Run a quiz | A live multiple-choice quiz with timer, projector/tally mode (no student devices needed) or shared-device team mode, aggregate results saved to the session. |
+| Small utilities | Random student picker that exhausts the roster before repeating, team maker, and a room-sized timer. |
+| Take your data | Attendance CSV, scorebook CSV, daily log in Markdown, printable class report, quiz results CSV, and a complete JSON backup you can restore anywhere. |
+| Work in Thai | Full English/ไทย toggle, Thai Buddhist-calendar dates, Thai-aware name sorting. |
 
-The server protects Version One classroom reads and writes through authenticated, teacher-owned routes. Classroom detail data combines the roster, lessons, teaching sessions, attendance history, evidence, assessments, and calculated totals in one application contract. See the [teacher workflow router][workflow-router] and [database schema][schema] for the implementation surface.
+## 🔍 Why it is different
 
-## Classroom flow
+Most teacher tools are cloud accounts. Your class lives in their database, behind their login, under their pricing. SornDi takes the opposite position, and the difference is mechanical, not marketing:
 
-1. **Sign in** through the configured OAuth provider.
-2. **Create a classroom** and add the real student roster you are responsible for.
-3. **Create a lesson** and open a teaching session for the appropriate school date.
-4. **Record attendance** for that session. Subsequent status or note changes create an audit entry.
-5. **Add evidence** and a next action while the lesson context is still available.
-6. **Create an assessment**, enter scores, review weighted totals, and export the active record when needed.
+1. **One connected session record.** A teaching session links the lesson, the attendance, the quiz results, the reflection and the next action. Exports read that one object, so the report agrees with what happened.
+2. **Local-first, for real.** The app is a single HTML file. No backend, no OAuth, no telemetry. Open it from a USB stick in a classroom with no internet and everything works.
+3. **The arithmetic is inspectable.** Every weighted total can show its own formula, which assessments were included, and why missing or excused work was excluded. Nothing is averaged in the dark.
+4. **Honest offline game mode.** The quiz runs on the projector with per-option tallies, or on one shared device in team rounds. No student accounts, no join-code server, no overpromised sync — multi-device live play is on the roadmap, not in the marketing.
 
-> **Data note:** SORNDI Version One stores classroom data in its configured application database. Use authentic classroom data only when your deployment, access controls, and local privacy obligations are ready for it.
+The full competitor study behind these choices — HiClass, Additio, iDoceo, Wayground, Nearpod, Wordwall, ClassDojo, Gimkit, Kahoot!, with dated captures and recorded limitations — is in [docs/COMPETITIVE-ANALYSIS.md](docs/COMPETITIVE-ANALYSIS.md).
 
-## Architecture
+## 🚀 Quick start
 
-```mermaid
-flowchart LR
-  Teacher[Teacher] --> UI[React teacher desk]
-  UI -->|tRPC| API[Express application server]
-  API -->|Protected procedures| Auth[Manus OAuth session]
-  API -->|Drizzle ORM| DB[(MySQL-compatible database)]
-  DB --> Records[Classrooms, rosters, lessons, sessions, attendance, evidence, assessments, scores]
-```
+**Option A — just open it.** Download `index.html` and double-click it. That is the whole install.
 
-## Quick start
-
-### Prerequisites
-
-Use **pnpm** (the repository’s declared package manager) and a MySQL-compatible database. The database configuration requires `DATABASE_URL` for Drizzle commands.[config]
+**Option B — clone the repo.**
 
 ```bash
 git clone https://github.com/Tulip9ZZZA/sorndi.git
 cd sorndi
-pnpm install
+open index.html        # macOS
+# or: xdg-open index.html  (Linux)
+# or: start index.html     (Windows)
 ```
 
-Create a local environment file using values for your own OAuth and database setup. Do not commit it.
+**Option C — serve it** (nicer URLs, same app):
 
 ```bash
-DATABASE_URL="mysql://USER:PASSWORD@HOST:3306/DATABASE"
-JWT_SECRET="replace-with-a-secure-local-secret"
-VITE_APP_ID="your-oauth-app-id"
-OAUTH_SERVER_URL="your-oauth-server-url"
-VITE_OAUTH_PORTAL_URL="your-oauth-portal-url"
-OWNER_OPEN_ID="your-owner-open-id"
+npx serve .            # or: python3 -m http.server 8080
 ```
 
-Generate and apply database migrations after `DATABASE_URL` is configured:
+**Option D — GitHub Pages.** Enable Pages on the `main` branch in your fork's settings; the app at the repo root *is* the site.
+
+First run: **Settings → Load demo class** gives you a realistic Grade 8 science class with 15 students, a taught session, scored assessments and a quiz — good for exploring before you trust it with real rosters.
+
+**Try the loop the MVP promises:** create a class → paste your roster → generate a lesson from a template → open a session → take attendance → run the exit quiz in projector mode → write the reflection → export the daily log.
+
+Run the tests (Node 18+, no dependencies to install):
 
 ```bash
-pnpm db:push
+npm test               # runs: node tests/run-tests.mjs
 ```
 
-Start the development server:
+## 🧮 The math
 
-```bash
-pnpm dev
-```
-
-## Commands
-
-| Command | Purpose |
-| --- | --- |
-| `pnpm dev` | Start the development server with file watching. |
-| `pnpm check` | Run the TypeScript type check. |
-| `pnpm test` | Run the Vitest test suite. |
-| `pnpm build` | Build the Vite client and bundled application server. |
-| `pnpm start` | Run the built server in production mode. |
-| `pnpm db:push` | Generate and apply Drizzle migrations; requires `DATABASE_URL`. |
-| `pnpm format` | Format the repository with Prettier. |
-
-## Data model and record behavior
-
-| Record | Relationship | Version One behavior |
-| --- | --- | --- |
-| Classroom | Owned by one authenticated teacher | Holds the roster, lessons, sessions, assessments, and appearance details. |
-| Teaching session | Belongs to one classroom and can reference one lesson | Anchors attendance, evidence, reflection, and session status. |
-| Attendance record | One student per session | Supports present, late, excused, absent, sick, remote, and other practical statuses. |
-| Attendance correction | Belongs to an attendance record | Stores previous/next status and note, the actor, and the change time. |
-| Assessment and score | An assessment belongs to a classroom; scores belong to students | Keeps recorded, missing, and excused work distinct so missing or excused work is not silently treated as zero. |
-
-Timestamps are handled as UTC application timestamps, while teaching dates are stored as ISO school-calendar dates in the product schema.[schema]
-
-## Project map
+The scorebook policy is explicit:
 
 ```text
-client/
-  src/pages/          Teacher workspace routes and user interface
-  src/components/     Shared interface components
-server/
-  sorndiRouter.ts     Protected teacher workflow procedures
-  gradebook.ts        Weighted-score calculations
-  db.ts               Database access helpers
-drizzle/
-  schema.ts           Classroom record schema
-  migrations/         Generated database migrations
+percentage(a)   = score / max_score × 100          (skipped when missing or excused)
+weighted_total  = Σ(percentage × weight) / Σ(weight)
+
+missing  → excluded from both sums, reported as "Missing: n (excluded)"
+excused  → excluded from both sums, reported as "Excused: n (excluded)"
+out-of-range scores are ignored, never invented
 ```
 
-## Testing and quality checks
+Every student's total has an info button that prints exactly this breakdown for that student. The same functions power the app and the test suite ([lib/sorndi-core.mjs](lib/sorndi-core.mjs), [tests/run-tests.mjs](tests/run-tests.mjs)).
 
-The repository includes Vitest coverage for authentication logout behavior and weighted-score calculations. Run the full local verification sequence before opening a pull request:
+## 🔐 Your data
 
-```bash
-pnpm check
-pnpm test
-pnpm build
-git diff --check
-```
+- Everything is stored in your browser's local storage under one key (`sorndi.v2`). Nothing leaves the device — the app makes zero network requests.
+- **Exports → Full backup (JSON)** produces a complete, human-readable copy. **Restore** replaces current data with a backup file.
+- Erasing is explicit: type `ERASE` to confirm.
+- Student privacy rules are built in: no student accounts, no public pages, no health data, no behavioural scoring. Details in [docs/DATA-AND-PRIVACY.md](docs/DATA-AND-PRIVACY.md).
 
-## Contributing
+## 🗺 Roadmap
 
-Keep changes focused, run the verification sequence above, and describe the classroom workflow affected by your change. Do not add student data, access tokens, connection strings, or other private classroom information to commits, fixtures, screenshots, or issue reports.
+| Priority | Capability | Status |
+| --- | --- | --- |
+| P0 | Class, roster, timetable, Today | ✅ v2.0 |
+| P0 | Lesson templates with duration validation | ✅ v2.0 |
+| P0 | Sessions, attendance with correction history | ✅ v2.0 |
+| P0 | Live quiz: projector/tally + shared-device modes | ✅ v2.0 |
+| P0 | Exports: CSV, Markdown, print, JSON backup | ✅ v2.0 |
+| P1 | Multi-device live quiz over the local network (WebRTC, no internet) | Planned |
+| P1 | Spaced review queue driven by objectives and evidence | Planned |
+| P1 | QR attendance with manual fallback | Planned |
+| P2 | Objectives bank and objective-to-evidence mapping | Planned |
+| P2 | Open resource packs: import/export lessons and quizzes as files | Planned |
+| P3 | Community library with attribution and remix licences | Exploring |
 
-## License
+## 🤝 Contributing
 
-The package metadata declares the project as **MIT**. A root `LICENSE` file has not yet been added; add the final license text before distributing or accepting external contributions under those terms.
+Issues and pull requests are welcome. Because the app is dependency-free vanilla JS, the bar for contributing is low: read [CONTRIBUTING.md](CONTRIBUTING.md), keep the design system consistent ([docs/BRAND.md](docs/BRAND.md)), and add a test when you touch the domain logic.
 
-## Project resources
+Please never commit real student names, scores, or any personal classroom data.
 
-The Field Ledger interface direction is documented in [DESIGN.md][design], and the original product brief is available in [ideas.md][ideas].
+## 📄 License
 
-[workflow-router]: ./server/sorndiRouter.ts
-[schema]: ./drizzle/schema.ts
-[config]: ./drizzle.config.ts
-[design]: ./DESIGN.md
-[ideas]: ./ideas.md
+[MIT](LICENSE) — use it, fork it, run it at your school, build your business on it. The name and logo are SornDi's; the code is yours.
+
+## 🙏 Acknowledgements
+
+SornDi v2 was designed with a stack of open agent skills: the [logo-design](https://github.com/kaankiziltug/logo-design-skill) process for the Ledger-S mark, [brand-skills](https://github.com/cofoundy/brand-skills) for the identity system, [unslop](https://github.com/heydamir/unslop) for the interface discipline, [beautify-github-readme](https://github.com/oil-oil/beautify-github-readme) for this page, and an REA-style evidence discipline for the competitive teardown. Learning-science structure of the lesson templates follows retrieval practice and worked-example guidance summarised by AERO's spacing and retrieval guide.
